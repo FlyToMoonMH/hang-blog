@@ -12,23 +12,63 @@ function slugify(str: string): string {
   return slugger.slug(str);
 }
 
-export function getAllPosts(): Post[] {
-  if (!fs.existsSync(POSTS_DIR)) {
-    return [];
+/**
+ * 递归扫描目录，找出所有 .md 和 .mdx 文件
+ * 以 _ 或 . 开头的文件/文件夹会被跳过（如 _template.md、_drafts/、.obsidian/）
+ */
+function findMarkdownFiles(
+  dir: string,
+  baseDir: string
+): { filePath: string; relativePath: string }[] {
+  const results: { filePath: string; relativePath: string }[] = [];
+  if (!fs.existsSync(dir)) return results;
+
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    // 跳过以 _ 或 . 开头的文件/文件夹
+    if (entry.name.startsWith("_") || entry.name.startsWith(".")) continue;
+
+    const fullPath = path.join(dir, entry.name);
+    const relativePath = path.relative(baseDir, fullPath);
+
+    if (entry.isDirectory()) {
+      results.push(...findMarkdownFiles(fullPath, baseDir));
+    } else if (
+      entry.isFile() &&
+      (entry.name.endsWith(".md") || entry.name.endsWith(".mdx"))
+    ) {
+      results.push({ filePath: fullPath, relativePath });
+    }
   }
 
-  const files = fs.readdirSync(POSTS_DIR).filter((f) => f.endsWith(".mdx"));
+  return results;
+}
+
+/**
+ * 从文件相对路径提取 slug（只用文件名，不含文件夹路径）
+ * 例: "笔记/daily.md"    → "daily"
+ *     "前端/react.mdx"   → "react"
+ *     "welcome.mdx"      → "welcome"
+ * 文件夹仅用于本地整理，不出现在 URL 中
+ */
+function pathToSlug(relativePath: string): string {
+  const fileName = path.basename(relativePath);
+  return fileName.replace(/\.(md|mdx)$/, "");
+}
+
+export function getAllPosts(): Post[] {
+  const files = findMarkdownFiles(POSTS_DIR, POSTS_DIR);
 
   const posts = files
-    .map((filename) => {
-      const filePath = path.join(POSTS_DIR, filename);
+    .map(({ filePath, relativePath }) => {
       const raw = fs.readFileSync(filePath, "utf-8");
       const { data, content } = matter(raw);
       const frontmatter = data as Frontmatter;
 
       if (frontmatter.draft) return null;
 
-      const slug = filename.replace(/\.mdx$/, "");
+      const slug = pathToSlug(relativePath);
       const stats = readingTime(content);
       const minutes = Math.max(1, Math.ceil(stats.minutes));
 
@@ -51,24 +91,28 @@ export function getAllPosts(): Post[] {
 }
 
 export function getPostBySlug(slug: string): Post | null {
-  const filePath = path.join(POSTS_DIR, `${slug}.mdx`);
+  // slug 是文件名（不含扩展名），文件可能在子文件夹中
+  // 遍历所有文章文件查找匹配的 slug
+  const files = findMarkdownFiles(POSTS_DIR, POSTS_DIR);
 
-  if (!fs.existsSync(filePath)) {
-    return null;
+  for (const { filePath, relativePath } of files) {
+    if (pathToSlug(relativePath) === slug) {
+      const raw = fs.readFileSync(filePath, "utf-8");
+      const { data, content } = matter(raw);
+      const frontmatter = data as Frontmatter;
+      const stats = readingTime(content);
+      const minutes = Math.max(1, Math.ceil(stats.minutes));
+
+      return {
+        slug,
+        frontmatter,
+        content,
+        readingTime: `${minutes} 分钟阅读`,
+      };
+    }
   }
 
-  const raw = fs.readFileSync(filePath, "utf-8");
-  const { data, content } = matter(raw);
-  const frontmatter = data as Frontmatter;
-  const stats = readingTime(content);
-  const minutes = Math.max(1, Math.ceil(stats.minutes));
-
-  return {
-    slug,
-    frontmatter,
-    content,
-    readingTime: `${minutes} 分钟阅读`,
-  };
+  return null;
 }
 
 export function getPostsByCategory(categorySlug: string): Post[] {

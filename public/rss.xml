@@ -4,7 +4,7 @@
         <title>航的笔记本</title>
         <link>https://hang-blog.vercel.app</link>
         <description>航的技术博客，记录学习与思考</description>
-        <lastBuildDate>Thu, 02 Jul 2026 17:40:11 GMT</lastBuildDate>
+        <lastBuildDate>Thu, 02 Jul 2026 19:53:08 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>zh-CN</language>
@@ -24,6 +24,15 @@
             <category>博客</category>
             <category>nextjs</category>
             <category>react</category>
+        </item>
+        <item>
+            <title><![CDATA[子文件夹测试]]></title>
+            <link>https://hang-blog.vercel.app/posts/subfolder-test</link>
+            <guid>https://hang-blog.vercel.app/posts/subfolder-test</guid>
+            <pubDate>Fri, 03 Jul 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[这篇文章放在子文件夹「笔记」里，验证文件夹分类功能]]></description>
+            <category>测试</category>
+            <category>文件夹</category>
         </item>
         <item>
             <title><![CDATA[深入理解 Next.js App Router]]></title>
