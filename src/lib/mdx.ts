@@ -5,7 +5,6 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeKatex from "rehype-katex";
-import { tonycraneDark, tonycraneLight } from "./shiki-themes";
 
 const remarkPlugins: PluggableList = [remarkGfm, remarkMath];
 
@@ -15,7 +14,7 @@ const rehypePlugins: PluggableList = [
   [
     rehypePrettyCode,
     {
-      theme: { dark: tonycraneDark, light: tonycraneLight },
+      theme: { dark: "tokyo-night", light: "one-light" },
       keepBackground: false,
     },
   ],

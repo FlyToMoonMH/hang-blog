@@ -25,20 +25,24 @@ body {
 }
 
 /* rehype-pretty-code dark/light theme switching */
-html.dark .shiki,
-html.dark .shiki span {
+html.dark [data-rehype-pretty-code-figure] span {
   color: var(--shiki-dark) !important;
-  background-color: var(--shiki-dark-bg) !important;
 }
 
-/* Light mode: use light tokens */
-html .shiki,
-html .shiki span {
+[data-rehype-pretty-code-figure] span {
   color: var(--shiki-light) !important;
-  background-color: var(--shiki-light-bg) !important;
 }
 
-/* Code block wrapper */
+/* Code block background — Tokyo Night (#1a1b26) / One Light (#fafafa) */
+[data-rehype-pretty-code-figure] pre {
+  background-color: #fafafa;
+}
+
+html.dark [data-rehype-pretty-code-figure] pre {
+  background-color: #1a1b26;
+}
+
+/* Code block wrapper — background controlled by Shiki CSS vars */
 [data-rehype-pretty-code-figure] pre {
   overflow-x: auto;
   border-radius: 8px;
@@ -47,34 +51,21 @@ html .shiki span {
   line-height: 1.6;
 }
 
-/* Line numbers */
+/* Line padding */
 [data-rehype-pretty-code-figure] [data-line] {
   padding: 0 1.25rem;
 }
 
-/* Line highlight */
+/* Highlighted line — Tokyo Night blue accent */
 [data-rehype-pretty-code-figure] [data-highlighted-line] {
-  background-color: rgba(41, 119, 255, 0.12);
-  border-left: 2px solid #2977ff;
+  background-color: rgba(122, 162, 247, 0.12);
+  border-left: 2px solid #7aa2f7;
 }
 
-html.dark [data-rehype-pretty-code-figure] [data-highlighted-line] {
-  background-color: rgba(41, 119, 255, 0.15);
-}
-
-/* Code block background */
-[data-rehype-pretty-code-figure] pre {
-  background-color: #fafafa;
-}
-
-html.dark [data-rehype-pretty-code-figure] pre {
-  background-color: #1d1d1d;
-}
-
-/* Code block title/caption */
+/* Code block title/caption — Tokyo Night style */
 [data-rehype-pretty-code-figure] [data-rehype-pretty-code-title] {
-  background-color: #f0f0f0;
-  color: #555;
+  background-color: #e9e9ee;
+  color: #565a6e;
   border-radius: 8px 8px 0 0;
   padding: 0.5rem 1rem;
   font-size: 0.8rem;
@@ -82,8 +73,8 @@ html.dark [data-rehype-pretty-code-figure] pre {
 }
 
 html.dark [data-rehype-pretty-code-figure] [data-rehype-pretty-code-title] {
-  background-color: #2a2a2a;
-  color: #aaa;
+  background-color: #16161e;
+  color: #9aa5ce;
 }
 
 [data-rehype-pretty-code-figure] [data-rehype-pretty-code-title] + pre {
