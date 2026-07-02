@@ -59,7 +59,7 @@ export default function HomePage() {
         <span className="select-none text-gray-300 opacity-70 dark:text-gray-600">/</span>
 
         <a
-          href="mailto:hi@mhang.cc"
+          href="mailto:mahang23@mails.ucas.ac.cn"
           className="text-gray-700 transition-colors hover:text-[#5887FC] dark:text-gray-300 dark:hover:text-[#0072ff]"
           title="Email"
         >

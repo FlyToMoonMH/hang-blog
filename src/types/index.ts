@@ -5,6 +5,7 @@ export interface Frontmatter {
   category: string;
   tags: string[];
   draft?: boolean;
+  password?: string;
 }
 
 export interface Post {
