@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>航的笔记本</title>
+        <link>https://hang-blog.vercel.app</link>
+        <description>航的技术博客，记录学习与思考</description>
+        <lastBuildDate>Thu, 02 Jul 2026 17:40:11 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>https://github.com/jpmonette/feed</generator>
+        <language>zh-CN</language>
+        <image>
+            <title>航的笔记本</title>
+            <url>https://hang-blog.vercel.app/favicon.ico</url>
+            <link>https://hang-blog.vercel.app</link>
+        </image>
+        <copyright>All rights reserved 2026, 航的笔记本</copyright>
+        <atom:link href="https://hang-blog.vercel.app/rss.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[欢迎来到航的笔记本]]></title>
+            <link>https://hang-blog.vercel.app/posts/welcome</link>
+            <guid>https://hang-blog.vercel.app/posts/welcome</guid>
+            <pubDate>Fri, 03 Jul 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[这是一个使用 Next.js 搭建的个人技术博客，记录学习与思考]]></description>
+            <category>博客</category>
+            <category>nextjs</category>
+            <category>react</category>
+        </item>
+        <item>
+            <title><![CDATA[深入理解 Next.js App Router]]></title>
+            <link>https://hang-blog.vercel.app/posts/nextjs-app-router</link>
+            <guid>https://hang-blog.vercel.app/posts/nextjs-app-router</guid>
+            <pubDate>Thu, 02 Jul 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[从零开始理解 Next.js App Router 的路由系统、服务端组件和布局模式]]></description>
+            <category>nextjs</category>
+            <category>react</category>
+            <category>app-router</category>
+            <category>ssr</category>
+        </item>
+        <item>
+            <title><![CDATA[React Hooks 实用指南]]></title>
+            <link>https://hang-blog.vercel.app/posts/react-hooks-guide</link>
+            <guid>https://hang-blog.vercel.app/posts/react-hooks-guide</guid>
+            <pubDate>Wed, 01 Jul 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[全面介绍常用的 React Hooks，包含实际使用场景和最佳实践]]></description>
+            <category>react</category>
+            <category>hooks</category>
+            <category>前端</category>
+        </item>
+    </channel>
+</rss>
