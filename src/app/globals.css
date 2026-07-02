@@ -41,15 +41,53 @@ html .shiki span {
 /* Code block wrapper */
 [data-rehype-pretty-code-figure] pre {
   overflow-x: auto;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
 }
 
-/* Line highlight */
+/* Line numbers */
 [data-rehype-pretty-code-figure] [data-line] {
   padding: 0 1.25rem;
 }
 
+/* Line highlight */
 [data-rehype-pretty-code-figure] [data-highlighted-line] {
-  background-color: rgba(200, 200, 255, 0.1);
+  background-color: rgba(41, 119, 255, 0.12);
+  border-left: 2px solid #2977ff;
+}
+
+html.dark [data-rehype-pretty-code-figure] [data-highlighted-line] {
+  background-color: rgba(41, 119, 255, 0.15);
+}
+
+/* Code block background */
+[data-rehype-pretty-code-figure] pre {
+  background-color: #fafafa;
+}
+
+html.dark [data-rehype-pretty-code-figure] pre {
+  background-color: #1d1d1d;
+}
+
+/* Code block title/caption */
+[data-rehype-pretty-code-figure] [data-rehype-pretty-code-title] {
+  background-color: #f0f0f0;
+  color: #555;
+  border-radius: 8px 8px 0 0;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+html.dark [data-rehype-pretty-code-figure] [data-rehype-pretty-code-title] {
+  background-color: #2a2a2a;
+  color: #aaa;
+}
+
+[data-rehype-pretty-code-figure] [data-rehype-pretty-code-title] + pre {
+  border-radius: 0 0 8px 8px;
 }
 
 /* Inline code */
