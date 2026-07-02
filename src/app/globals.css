@@ -16,6 +16,11 @@ html {
   scroll-behavior: smooth;
 }
 
+/* 锚点跳转时留出 sticky header 的空间 */
+.prose :is(h1, h2, h3, h4, h5, h6) {
+  scroll-margin-top: 5rem;
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);
