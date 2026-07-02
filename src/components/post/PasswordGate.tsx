@@ -52,14 +52,6 @@ export function PasswordGate({ slug, title }: PasswordGateProps) {
 
   useEffect(() => {
     inputRef.current?.focus();
-
-    // 检查 localStorage 是否有记住的密码
-    const stored = localStorage.getItem(`encrypt_${slug}`);
-    if (stored) {
-      setPassword(stored);
-      // 自动尝试解密
-      tryDecrypt(stored);
-    }
   }, [slug]);
 
   // 自动尝试解密
@@ -78,8 +70,6 @@ export function PasswordGate({ slug, title }: PasswordGateProps) {
       const html = decryptContent(pw, data.iv, data.ciphertext);
       if (html) {
         setDecryptedHtml(html);
-        // 记住密码 48 小时
-        localStorage.setItem(`encrypt_${slug}`, pw);
       } else {
         setError(true);
         localStorage.removeItem(`encrypt_${slug}`);
