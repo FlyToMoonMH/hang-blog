@@ -10,7 +10,7 @@ interface PasswordGateProps {
 
 /**
  * 客户端解密内容
- * AES-128-CBC, key = MD5(password), NoPadding
+ * AES-128-CBC, key = MD5(password), PKCS7 填充
  */
 function decryptContent(
   password: string,
@@ -27,7 +27,7 @@ function decryptContent(
       key,
       {
         iv: iv,
-        padding: CryptoJS.pad.NoPadding,
+        padding: CryptoJS.pad.Pkcs7,
         mode: CryptoJS.mode.CBC,
       }
     );
@@ -35,8 +35,7 @@ function decryptContent(
     const text = decrypted.toString(CryptoJS.enc.Utf8);
     if (!text) return false;
 
-    // 去掉 \0 填充
-    return text.replace(/\0+$/, "");
+    return text;
   } catch {
     return false;
   }

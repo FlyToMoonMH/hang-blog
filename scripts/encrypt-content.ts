@@ -69,21 +69,15 @@ async function markdownToHtml(markdown: string): Promise<string> {
 
 /**
  * 加密内容
- * AES-128-CBC, key = MD5(password), 随机 IV, NoPadding
+ * AES-128-CBC, key = MD5(password), 随机 IV, PKCS7 填充
  */
 function encryptContent(content: string, password: string) {
   const key = CryptoJS.MD5(password);
   const iv = CryptoJS.lib.WordArray.random(16);
 
-  // Padding: 用 \0 填充到 16 字节倍数（与 TonyCrane 一致）
-  const paddingChar = "\0";
-  const blockSize = 16;
-  const padLength = blockSize - (content.length % blockSize);
-  const paddedContent = content + paddingChar.repeat(padLength);
-
-  const encrypted = CryptoJS.AES.encrypt(paddedContent, key, {
+  const encrypted = CryptoJS.AES.encrypt(content, key, {
     iv: iv,
-    padding: CryptoJS.pad.NoPadding,
+    padding: CryptoJS.pad.Pkcs7,
     mode: CryptoJS.mode.CBC,
   });
 
