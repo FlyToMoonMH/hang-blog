@@ -46,3 +46,20 @@ export interface LikeData {
   slug: string;
   count: number;
 }
+
+export interface SidebarItem {
+  title: string;
+  slug?: string;
+  children?: SidebarItem[];
+  isFolder: boolean;
+}
+
+export interface SearchIndexEntry {
+  slug: string;
+  title: string;
+  description: string;
+  category: string;
+  tags: string[];
+  date: string;
+  content: string;
+}

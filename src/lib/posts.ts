@@ -3,7 +3,7 @@ import path from "path";
 import matter from "gray-matter";
 import readingTime from "reading-time";
 import GithubSlugger from "github-slugger";
-import type { Post, Frontmatter, CategoryInfo, TagInfo } from "@/types";
+import type { Post, Frontmatter, CategoryInfo, TagInfo, SidebarItem, SearchIndexEntry } from "@/types";
 
 const POSTS_DIR = path.join(process.cwd(), "content", "posts");
 
@@ -182,3 +182,79 @@ export function getAdjacentPosts(slug: string): {
 }
 
 export { slugify };
+
+/**
+ * 构建侧边栏树结构
+ * 根据 content/posts/ 的文件夹层级自动生成
+ */
+export function getSidebarTree(): SidebarItem[] {
+  const files = findMarkdownFiles(POSTS_DIR, POSTS_DIR);
+  const tree: SidebarItem[] = [];
+
+  for (const { filePath, relativePath } of files) {
+    const raw = fs.readFileSync(filePath, "utf-8");
+    const { data } = matter(raw);
+    const frontmatter = data as Frontmatter;
+    if (frontmatter.draft) continue;
+
+    const slug = pathToSlug(relativePath);
+    const title = frontmatter.title || slug;
+    const dir = path.dirname(relativePath);
+
+    if (dir === ".") {
+      // 根目录文件
+      tree.push({ title, slug, isFolder: false });
+    } else {
+      // 子文件夹中的文件
+      const parts = dir.split(path.sep);
+      let currentLevel = tree;
+
+      for (const part of parts) {
+        let existing = currentLevel.find(
+          (item) => item.isFolder && item.title === part
+        );
+        if (!existing) {
+          existing = { title: part, isFolder: true, children: [] };
+          currentLevel.push(existing);
+        }
+        if (!existing.children) existing.children = [];
+        currentLevel = existing.children;
+      }
+
+      currentLevel.push({ title, slug, isFolder: false });
+    }
+  }
+
+  // 排序：文件夹在前，文件在后；文件夹按名称排序，文件按日期倒序
+  function sortItems(items: SidebarItem[]) {
+    items.sort((a, b) => {
+      if (a.isFolder && !b.isFolder) return -1;
+      if (!a.isFolder && b.isFolder) return 1;
+      if (a.isFolder && b.isFolder) {
+        return a.title.localeCompare(b.title, "zh-CN");
+      }
+      return 0;
+    });
+    items.forEach((item) => {
+      if (item.children) sortItems(item.children);
+    });
+  }
+  sortItems(tree);
+
+  return tree;
+}
+
+/**
+ * 生成搜索索引（用于客户端全文搜索）
+ */
+export function getSearchIndex(): SearchIndexEntry[] {
+  return getAllPosts().map((post) => ({
+    slug: post.slug,
+    title: post.frontmatter.title,
+    description: post.frontmatter.description,
+    category: post.frontmatter.category,
+    tags: post.frontmatter.tags,
+    date: post.frontmatter.date,
+    content: post.content.slice(0, 2000),
+  }));
+}

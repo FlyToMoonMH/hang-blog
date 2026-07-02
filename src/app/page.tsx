@@ -8,7 +8,7 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+      <div className="max-w-4xl">
         <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
           最新文章
         </h2>

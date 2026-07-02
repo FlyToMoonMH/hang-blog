@@ -1,24 +1,15 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import "katex/dist/katex.min.css";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ReadingProgress } from "@/components/post/ReadingProgress";
 import { BackToTop } from "@/components/post/BackToTop";
+import { Sidebar } from "@/components/layout/Sidebar";
+import { SearchDialog } from "@/components/search/SearchDialog";
+import { getSidebarTree } from "@/lib/posts";
 import { siteConfig } from "@/lib/site";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -50,19 +41,37 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const sidebarItems = getSidebarTree();
+
   return (
     <html lang="zh-CN" suppressHydrationWarning>
-      <body
-        className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
-      >
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/style.css"
+        />
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css"
+        />
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.5/index.min.css"
+        />
+      </head>
+      <body className="font-sans antialiased">
         <ThemeProvider>
           <ReadingProgress />
           <div className="flex min-h-screen flex-col bg-white text-gray-900 dark:bg-[#0a0a0a] dark:text-gray-100">
             <Header />
-            <main className="flex-1">{children}</main>
+            <div className="mx-auto flex w-full max-w-7xl flex-1">
+              <Sidebar items={sidebarItems} />
+              <main className="min-w-0 flex-1 px-4 py-8 sm:px-6">{children}</main>
+            </div>
             <Footer />
           </div>
           <BackToTop />
+          <SearchDialog />
         </ThemeProvider>
       </body>
     </html>

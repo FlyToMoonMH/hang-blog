@@ -56,21 +56,19 @@ export default async function PostPage({
   const { prev, next } = getAdjacentPosts(slug);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-      <div className="flex gap-12">
-        <article className="min-w-0 flex-1 max-w-3xl">
-          <PostHeader post={post} />
-          <PostBody>
-            <MDXContent source={post.content} />
-          </PostBody>
-          <PostActions title={post.frontmatter.title} />
-          <PostNav prev={prev} next={next} />
-          <CommentSection slug={post.slug} />
-        </article>
-        <aside className="sticky top-24 hidden h-fit w-56 shrink-0 xl:block">
-          <TableOfContents items={toc} />
-        </aside>
-      </div>
+    <div className="flex gap-8">
+      <article className="min-w-0 max-w-3xl flex-1">
+        <PostHeader post={post} />
+        <PostBody>
+          <MDXContent source={post.content} />
+        </PostBody>
+        <PostActions title={post.frontmatter.title} />
+        <PostNav prev={prev} next={next} />
+        <CommentSection slug={post.slug} />
+      </article>
+      <aside className="sticky top-24 hidden h-fit w-56 shrink-0 xl:block">
+        <TableOfContents items={toc} />
+      </aside>
     </div>
   );
 }

@@ -4,7 +4,7 @@
         <title>航的笔记本</title>
         <link>https://hang-blog.vercel.app</link>
         <description>航的技术博客，记录学习与思考</description>
-        <lastBuildDate>Thu, 02 Jul 2026 19:53:08 GMT</lastBuildDate>
+        <lastBuildDate>Thu, 02 Jul 2026 20:09:50 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>zh-CN</language>
@@ -15,6 +15,16 @@
         </image>
         <copyright>All rights reserved 2026, 航的笔记本</copyright>
         <atom:link href="https://hang-blog.vercel.app/rss.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[数学公式与代码高亮测试]]></title>
+            <link>https://hang-blog.vercel.app/posts/math-code-test</link>
+            <guid>https://hang-blog.vercel.app/posts/math-code-test</guid>
+            <pubDate>Fri, 03 Jul 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[验证 KaTeX 数学公式渲染和 Shiki 代码语法高亮]]></description>
+            <category>测试</category>
+            <category>数学</category>
+            <category>代码</category>
+        </item>
         <item>
             <title><![CDATA[欢迎来到航的笔记本]]></title>
             <link>https://hang-blog.vercel.app/posts/welcome</link>

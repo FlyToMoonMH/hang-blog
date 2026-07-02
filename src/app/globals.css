@@ -19,6 +19,7 @@ html {
 body {
   background-color: var(--background);
   color: var(--foreground);
+  font-family: "LXGW WenKai Screen", "LXGW WenKai", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

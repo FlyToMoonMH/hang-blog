@@ -9,8 +9,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
-        mono: ["var(--font-mono)", "monospace"],
+        sans: ['"LXGW WenKai Screen"', '"LXGW WenKai"', "system-ui", "sans-serif"],
+        mono: ['"JetBrains Mono"', "monospace"],
       },
       colors: {
         accent: {

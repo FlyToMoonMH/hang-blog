@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: "航的笔记本",
-  url: "https://hang-blog.vercel.app",
+  url: "https://mhang.cc",
   description: "航的技术博客，记录学习与思考",
   locale: "zh-CN",
   author: "航",
