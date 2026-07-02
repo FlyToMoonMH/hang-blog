@@ -68,7 +68,7 @@ function SidebarNode({
 
   return (
     <Link
-      href={item.slug ? `/posts/${item.slug}` : "#"}
+      href={item.slug ? `/notes/${item.slug}` : "#"}
       className={`block py-1.5 text-sm transition-colors ${
         isActive
           ? "font-semibold text-blue-600 dark:text-blue-400"
@@ -83,8 +83,8 @@ function SidebarNode({
 
 export function Sidebar({ items }: { items: SidebarItem[] }) {
   const pathname = usePathname();
-  const activeSlug = pathname.startsWith("/posts/")
-    ? pathname.replace("/posts/", "").replace(/\/$/, "")
+  const activeSlug = pathname.startsWith("/notes/")
+    ? pathname.replace("/notes/", "").replace(/\/$/, "")
     : "";
 
   const [expandedSet, setExpandedSet] = useState<Set<string>>(new Set());

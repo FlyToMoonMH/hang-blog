@@ -12,7 +12,7 @@ export function PostNav({
     <nav className="mt-12 grid grid-cols-1 gap-4 border-t border-gray-200/60 pt-8 dark:border-gray-800/60 sm:grid-cols-2">
       {prev ? (
         <Link
-          href={`/posts/${prev.slug}`}
+          href={`/notes/${prev.slug}`}
           className="group rounded-lg border border-gray-200 p-4 transition-colors hover:border-gray-300 dark:border-gray-800 dark:hover:border-gray-700"
         >
           <span className="text-sm text-gray-500 dark:text-gray-400">
@@ -27,7 +27,7 @@ export function PostNav({
       )}
       {next ? (
         <Link
-          href={`/posts/${next.slug}`}
+          href={`/notes/${next.slug}`}
           className="group rounded-lg border border-gray-200 p-4 text-right transition-colors hover:border-gray-300 dark:border-gray-800 dark:hover:border-gray-700"
         >
           <span className="text-sm text-gray-500 dark:text-gray-400">

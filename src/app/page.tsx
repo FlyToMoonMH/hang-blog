@@ -1,11 +1,64 @@
+"use client";
+
 import Image from "next/image";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 export default function HomePage() {
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = mounted && resolvedTheme === "dark";
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-4">
-      {/* Avatar + Name */}
-      <div className="mb-10 flex items-center gap-5">
-        <div className="relative h-24 w-24 overflow-hidden rounded-full border-2 border-gray-200 dark:border-gray-700">
+    <div className="relative flex min-h-screen flex-col items-center justify-center px-4">
+      {/* Theme toggle */}
+      {mounted && (
+        <button
+          onClick={() => setTheme(isDark ? "light" : "dark")}
+          className="fixed right-5 top-5 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white/80 text-gray-600 shadow-sm backdrop-blur-sm transition-all hover:border-gray-300 hover:bg-white hover:shadow dark:border-gray-700 dark:bg-gray-900/80 dark:text-gray-400 dark:hover:border-gray-600 dark:hover:bg-gray-900"
+          aria-label="切换主题"
+        >
+          {isDark ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+            </svg>
+          ) : (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+            </svg>
+          )}
+        </button>
+      )}
+
+      {/* Avatar - 居中大圆形 */}
+      <div className="mb-8">
+        <div className="relative mx-auto h-36 w-36 overflow-hidden rounded-full border-[3px] border-gray-200 shadow-lg dark:border-gray-700 sm:h-44 sm:w-44">
           <Image
             src="/avatar.jpg"
             alt="MHang"
@@ -14,14 +67,16 @@ export default function HomePage() {
             priority
           />
         </div>
-        <div className="text-left">
-          <h1 className="font-bold tracking-tight text-gray-900 text-2xl dark:text-gray-100">
-            MHang
-          </h1>
-          <p className="mt-1 font-light text-gray-500 dark:text-gray-400">
-            航的笔记本
-          </p>
-        </div>
+      </div>
+
+      {/* Name + Subtitle */}
+      <div className="mb-10 text-center">
+        <h1 className="font-bold tracking-tight text-gray-900 text-3xl dark:text-gray-100">
+          MHang
+        </h1>
+        <p className="mt-2 font-light text-gray-500 dark:text-gray-400 text-base">
+          航的笔记本
+        </p>
       </div>
 
       {/* Links with icons */}
@@ -40,7 +95,7 @@ export default function HomePage() {
         <span className="select-none text-gray-300 dark:text-gray-600">/</span>
 
         <a
-          href="/posts/"
+          href="/notes/"
           className="group inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-gray-600 transition-colors hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400"
           title="笔记本"
         >
@@ -66,7 +121,7 @@ export default function HomePage() {
           className="group inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-gray-600 transition-colors hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400"
           title="About Me"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c5.523 0 10 4.477 10 10a10 10 0 0 1-19.995.324L2 12l.004-.28C2.152 6.327 6.57 2 12 2m0 9h-1l-.117.007a1 1 0 0 0 0 1.986L11 13v3l.007.117a1 1 0 0 0 .876.876L12 17h1l.117-.007a1 1 0 0 0 .876-.876L14 16l-.007-.117a1 1 0 0 0-.764-.857l-.112-.02L13 15v-3l-.007-.117a1 1 0 0 0-.876-.876zm.01-3l-.127.007a1 1 0 0 0 0 1.986L12 10l.127-.007a1 1 0 0 0 0-1.986z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 2C14.59 2 15.49 2.89 15.5 4L17 4C18.1 4 19 4.89 19 6V20C19 21.11 18.1 22 17 22H7C5.9 22 5 21.11 5 20V6C5 4.89 5.9 4 7 4H8.5C8.51 2.89 9.41 2 10.5 2M13.5 4H10.5C10.22 4 10 4.22 10 4.5V5H14V4.5C14 4.22 13.78 4 13.5 4M7 6V20H17V6H7M12 9C14.21 9 16 10.79 16 13S14.21 17 12 17 8 15.21 8 13 9.79 9 12 9M12 11C10.9 11 10 11.9 10 13S10.9 15 12 15 14 14.1 14 13 13.1 11 12 11Z"/></svg>
           <span>About</span>
         </a>
       </nav>
