@@ -2,23 +2,23 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>航的笔记本</title>
-        <link>https://hang-blog.vercel.app</link>
+        <link>https://mhang.cc</link>
         <description>航的技术博客，记录学习与思考</description>
-        <lastBuildDate>Thu, 02 Jul 2026 20:09:50 GMT</lastBuildDate>
+        <lastBuildDate>Thu, 02 Jul 2026 20:26:32 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>zh-CN</language>
         <image>
             <title>航的笔记本</title>
-            <url>https://hang-blog.vercel.app/favicon.ico</url>
-            <link>https://hang-blog.vercel.app</link>
+            <url>https://mhang.cc/favicon.ico</url>
+            <link>https://mhang.cc</link>
         </image>
         <copyright>All rights reserved 2026, 航的笔记本</copyright>
-        <atom:link href="https://hang-blog.vercel.app/rss.xml" rel="self" type="application/rss+xml"/>
+        <atom:link href="https://mhang.cc/rss.xml" rel="self" type="application/rss+xml"/>
         <item>
             <title><![CDATA[数学公式与代码高亮测试]]></title>
-            <link>https://hang-blog.vercel.app/posts/math-code-test</link>
-            <guid>https://hang-blog.vercel.app/posts/math-code-test</guid>
+            <link>https://mhang.cc/posts/math-code-test</link>
+            <guid>https://mhang.cc/posts/math-code-test</guid>
             <pubDate>Fri, 03 Jul 2026 00:00:00 GMT</pubDate>
             <description><![CDATA[验证 KaTeX 数学公式渲染和 Shiki 代码语法高亮]]></description>
             <category>测试</category>
@@ -27,8 +27,8 @@
         </item>
         <item>
             <title><![CDATA[欢迎来到航的笔记本]]></title>
-            <link>https://hang-blog.vercel.app/posts/welcome</link>
-            <guid>https://hang-blog.vercel.app/posts/welcome</guid>
+            <link>https://mhang.cc/posts/welcome</link>
+            <guid>https://mhang.cc/posts/welcome</guid>
             <pubDate>Fri, 03 Jul 2026 00:00:00 GMT</pubDate>
             <description><![CDATA[这是一个使用 Next.js 搭建的个人技术博客，记录学习与思考]]></description>
             <category>博客</category>
@@ -37,8 +37,8 @@
         </item>
         <item>
             <title><![CDATA[子文件夹测试]]></title>
-            <link>https://hang-blog.vercel.app/posts/subfolder-test</link>
-            <guid>https://hang-blog.vercel.app/posts/subfolder-test</guid>
+            <link>https://mhang.cc/posts/subfolder-test</link>
+            <guid>https://mhang.cc/posts/subfolder-test</guid>
             <pubDate>Fri, 03 Jul 2026 00:00:00 GMT</pubDate>
             <description><![CDATA[这篇文章放在子文件夹「笔记」里，验证文件夹分类功能]]></description>
             <category>测试</category>
@@ -46,8 +46,8 @@
         </item>
         <item>
             <title><![CDATA[深入理解 Next.js App Router]]></title>
-            <link>https://hang-blog.vercel.app/posts/nextjs-app-router</link>
-            <guid>https://hang-blog.vercel.app/posts/nextjs-app-router</guid>
+            <link>https://mhang.cc/posts/nextjs-app-router</link>
+            <guid>https://mhang.cc/posts/nextjs-app-router</guid>
             <pubDate>Thu, 02 Jul 2026 00:00:00 GMT</pubDate>
             <description><![CDATA[从零开始理解 Next.js App Router 的路由系统、服务端组件和布局模式]]></description>
             <category>nextjs</category>
@@ -57,8 +57,8 @@
         </item>
         <item>
             <title><![CDATA[React Hooks 实用指南]]></title>
-            <link>https://hang-blog.vercel.app/posts/react-hooks-guide</link>
-            <guid>https://hang-blog.vercel.app/posts/react-hooks-guide</guid>
+            <link>https://mhang.cc/posts/react-hooks-guide</link>
+            <guid>https://mhang.cc/posts/react-hooks-guide</guid>
             <pubDate>Wed, 01 Jul 2026 00:00:00 GMT</pubDate>
             <description><![CDATA[全面介绍常用的 React Hooks，包含实际使用场景和最佳实践]]></description>
             <category>react</category>
