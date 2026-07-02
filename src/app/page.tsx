@@ -31,9 +31,6 @@ export default function HomePage() {
           <h1 className="text-3xl font-bold tracking-wide text-gray-900 dark:text-gray-100 sm:text-[2.5rem]">
             MHang
           </h1>
-          <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
-            航的笔记本
-          </p>
         </div>
       </div>
 
@@ -87,7 +84,7 @@ export default function HomePage() {
           <strong className="text-gray-600 dark:text-gray-300">MHang</strong>
         </p>
         <p className="mt-1 text-xs text-gray-300 dark:text-gray-600">
-          Built with Next.js &middot; Hosted on Vercel &middot; Powered by ❤️
+          Built with Next.js &middot; Powered by ❤️
         </p>
       </footer>
 
