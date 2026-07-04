@@ -29,6 +29,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ===== Code blocks (Shiki + fallback) ===== */
+
 /* rehype-pretty-code dark/light theme switching */
 html.dark [data-rehype-pretty-code-figure] span {
   color: var(--shiki-dark) !important;
@@ -38,7 +40,7 @@ html.dark [data-rehype-pretty-code-figure] span {
   color: var(--shiki-light) !important;
 }
 
-/* Code block background — Tokyo Night (#1a1b26) / One Light (#fafafa) */
+/* Shiki code block background */
 [data-rehype-pretty-code-figure] pre {
   background-color: #fafafa;
 }
@@ -47,8 +49,17 @@ html.dark [data-rehype-pretty-code-figure] pre {
   background-color: #1a1b26;
 }
 
-/* Code block wrapper — background controlled by Shiki CSS vars */
-[data-rehype-pretty-code-figure] pre {
+/* Fallback: <pre> not processed by Shiki (no language) */
+.prose pre:not([data-rehype-pretty-code-figure]) {
+  background-color: #fafafa;
+}
+
+html.dark .prose pre:not([data-rehype-pretty-code-figure]) {
+  background-color: #1a1b26;
+}
+
+/* Shared code block styling */
+.prose pre {
   overflow-x: auto;
   border-radius: 8px;
   padding: 1rem 1.25rem;
@@ -56,18 +67,18 @@ html.dark [data-rehype-pretty-code-figure] pre {
   line-height: 1.6;
 }
 
-/* Line padding */
+/* Shiki line padding */
 [data-rehype-pretty-code-figure] [data-line] {
   padding: 0 1.25rem;
 }
 
-/* Highlighted line — Tokyo Night blue accent */
+/* Highlighted line */
 [data-rehype-pretty-code-figure] [data-highlighted-line] {
   background-color: rgba(122, 162, 247, 0.12);
   border-left: 2px solid #7aa2f7;
 }
 
-/* Code block title/caption — Tokyo Night style */
+/* Code block title/caption */
 [data-rehype-pretty-code-figure] [data-rehype-pretty-code-title] {
   background-color: #e9e9ee;
   color: #565a6e;
