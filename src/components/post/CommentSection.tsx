@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Giscus from "@giscus/react";
 import { useTheme } from "next-themes";
 
@@ -20,54 +20,25 @@ function saveLike(slug: string): number {
   return count;
 }
 
-/**
- * 通过 postMessage 直接通知 Giscus iframe 切换主题，避免组件重渲染导致闪烁。
- * 这是官方推荐的主题切换方式：
- * https://giscus.app/advanced#ichange-the-theme-of-my-website-but-giscus-does-not-update
- */
-function sendMessageToGiscus(theme: string) {
-  const iframe = document.querySelector<HTMLIFrameElement>(
-    "iframe.giscus-frame"
-  );
-  if (!iframe) return;
-  iframe.contentWindow?.postMessage(
-    { giscus: { setConfig: { theme } } },
-    "https://giscus.app"
-  );
-}
-
 export function CommentSection({ slug }: { slug: string }) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [initialTheme, setInitialTheme] = useState("light");
   const [likeCount, setLikeCount] = useState(0);
   const [hasLiked, setHasLiked] = useState(false);
-  const prevThemeRef = useRef<string | undefined>(undefined);
 
-  // 首次挂载时确定初始主题（之后不再变化）
   useEffect(() => {
     setMounted(true);
     setLikeCount(loadLikes(slug));
     setHasLiked(localStorage.getItem(`${STORAGE_PREFIX}liked:${slug}`) === "1");
-    // 初始主题只设置一次
-    setInitialTheme(resolvedTheme === "dark" ? "dark_dimmed" : "light");
-  }, [slug]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // 监听主题变化，通过 postMessage 通知 iframe（不触发组件重渲染）
-  useEffect(() => {
-    if (!mounted) return;
-    const currentGiscusTheme = resolvedTheme === "dark" ? "dark_dimmed" : "light";
-    if (prevThemeRef.current && prevThemeRef.current !== currentGiscusTheme) {
-      sendMessageToGiscus(currentGiscusTheme);
-    }
-    prevThemeRef.current = currentGiscusTheme;
-  }, [resolvedTheme, mounted]);
+  }, [slug]);
 
   const handleLike = useCallback(() => {
     setHasLiked(true);
     localStorage.setItem(`${STORAGE_PREFIX}liked:${slug}`, "1");
     setLikeCount(saveLike(slug));
   }, [slug]);
+
+  const giscusTheme = resolvedTheme === "dark" ? "dark_dimmed" : "light";
 
   return (
     <div className="mt-12 border-t border-gray-200 pt-8 dark:border-gray-800">
@@ -102,22 +73,20 @@ export function CommentSection({ slug }: { slug: string }) {
       </div>
 
       {mounted && (
-        <div data-giscus-container>
-          <Giscus
-            repo="FlyToMoonMH/hang-blog"
-            repoId="R_kgDOTL0k-A"
-            category="Announcements"
-            categoryId="DIC_kwDOTL0k-M4DAYbQ"
-            mapping="pathname"
-            strict="0"
-            reactionsEnabled="1"
-            emitMetadata="0"
-            inputPosition="top"
-            theme={initialTheme}
-            lang="zh-CN"
-            loading="lazy"
-          />
-        </div>
+        <Giscus
+          repo="FlyToMoonMH/hang-blog"
+          repoId="R_kgDOTL0k-A"
+          category="Announcements"
+          categoryId="DIC_kwDOTL0k-M4DAYbQ"
+          mapping="pathname"
+          strict="0"
+          reactionsEnabled="1"
+          emitMetadata="0"
+          inputPosition="top"
+          theme={giscusTheme}
+          lang="zh-CN"
+          loading="lazy"
+        />
       )}
     </div>
   );
