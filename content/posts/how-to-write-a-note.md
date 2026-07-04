@@ -37,7 +37,7 @@ content/posts/my-first-note.md
 
 你可以在 `content/posts/` 下创建子文件夹来分类管理，**文件夹名不会出现在 URL 中**：
 
-```text
+```bash
 content/posts/
 ├── welcome.mdx              → /notes/welcome
 ├── 前端/
