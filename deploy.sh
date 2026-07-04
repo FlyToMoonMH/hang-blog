@@ -17,17 +17,24 @@ echo "  → 复制项目到临时目录..."
 rm -rf "$TEMP_DIR"
 cp -R "$PROJECT_DIR" "$TEMP_DIR"
 
-# 2. 构建
+# 2. 运行 prebuild 脚本（RSS、搜索索引、加密内容）
+echo "  → 生成 RSS、搜索索引、加密内容..."
+cd "$TEMP_DIR"
+npx tsx scripts/generate-rss.ts
+npx tsx scripts/generate-search-index.ts
+npx tsx scripts/encrypt-content.ts
+
+# 3. 构建
 echo "  → 构建静态文件..."
 cd "$TEMP_DIR"
 env -u NODE_OPTIONS node ./node_modules/.bin/next build
 
-# 3. 打包
+# 4. 打包
 echo "  → 打包构建产物..."
 cd "$TEMP_DIR/out"
 tar czf /tmp/mhang-blog-out.tar.gz .
 
-# 4. 上传
+# 5. 上传
 echo "  → 上传到服务器..."
 expect -c "
 set timeout 120
@@ -38,7 +45,7 @@ expect {
 }
 "
 
-# 5. 远程解压并重载 Nginx
+# 6. 远程解压并重载 Nginx
 echo "  → 服务器端解压部署..."
 expect -c "
 set timeout 60
@@ -50,7 +57,7 @@ expect {
 }
 "
 
-# 6. 清理
+# 7. 清理
 rm -f /tmp/mhang-blog-out.tar.gz
 
 echo ""

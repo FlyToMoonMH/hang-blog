@@ -57,7 +57,7 @@ async function markdownToHtml(markdown: string): Promise<string> {
     .use(rehypeSlug)
     .use(rehypeAutolinkHeadings, { behavior: "wrap" })
     .use(rehypePrettyCode, {
-      theme: { dark: "tokyo-night", light: "one-light" },
+      theme: { dark: "tokyo-night", light: "github-light" },
       keepBackground: false,
     })
     .use(rehypeKatex, { strict: false, throwOnError: false })
