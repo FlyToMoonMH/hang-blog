@@ -14,7 +14,7 @@ const rehypePlugins: PluggableList = [
   [
     rehypePrettyCode,
     {
-      theme: { dark: "tokyo-night", light: "one-light" },
+      theme: { dark: "tokyo-night", light: "github-light" },
       keepBackground: false,
     },
   ],
