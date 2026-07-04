@@ -13,7 +13,7 @@ export function Header() {
           href="/"
           className="text-lg font-bold tracking-tight text-gray-900 dark:text-gray-100"
         >
-          {siteConfig.name}
+          首页
         </Link>
 
         <nav className="flex items-center gap-1">
