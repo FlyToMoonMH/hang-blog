@@ -10,7 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const tags = getAllTags();
 
   const postUrls = posts.map((post) => ({
-    url: `${siteConfig.url}/${post.slug}`,
+    url: `${siteConfig.url}/notes/${post.slug}`,
     lastModified: new Date(post.frontmatter.date),
     changeFrequency: "monthly" as const,
     priority: 0.8,
@@ -36,6 +36,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: "daily",
       priority: 1,
+    },
+    {
+      url: `${siteConfig.url}/notes`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.9,
     },
     {
       url: `${siteConfig.url}/categories`,

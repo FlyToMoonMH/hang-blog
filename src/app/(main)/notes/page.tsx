@@ -3,10 +3,11 @@ import { PostCard } from "@/components/post/PostCard";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+  title: "笔记",
   description: "航的技术博客，记录学习与思考",
 };
 
-export default function HomePage() {
+export default function NotesPage() {
   const posts = getAllPosts();
 
   return (
