@@ -156,16 +156,6 @@ export default function AboutPage() {
           </div>
         </section>
       )}
-
-      {/* Back */}
-      <div className="mt-8">
-        <a
-          href="/"
-          className="text-sm text-gray-500 transition-colors hover:text-blue-500 dark:text-gray-400"
-        >
-          ← 返回首页
-        </a>
-      </div>
     </div>
   );
 }

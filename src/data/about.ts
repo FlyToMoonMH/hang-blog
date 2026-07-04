@@ -19,9 +19,14 @@ export const aboutData = {
   // --- 教育背景 ---
   education: [
     {
-      school: "学校名称",
-      major: "专业 · 学位",
-      period: "20XX.09 - 20XX.06",
+      school: "杭州电子科技大学",
+      major: "电子科学与技术 · 本科",
+      period: "2019.09 - 2023.06",
+    },
+    {
+      school: "中国科学院大学",
+      major: "电子信息 · 硕士",
+      period: "2023.09 - 2026.06",
     },
   ],
 

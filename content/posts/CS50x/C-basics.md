@@ -17,7 +17,7 @@ password: "Mahangmh370.."
 
 main 函数还支持另一种语法，支持两个参数：
 
-```c
+```c {1}
 int main(int argc, string argv[]){
     //argc：count of arguments
     //argv: argument vector，说人话就是输入的字符串数组
