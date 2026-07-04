@@ -15,7 +15,7 @@ export default function AboutLayout({
             href="/"
             className="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
           >
-            ← 首页
+            首页
           </Link>
           <ThemeToggle />
         </div>
