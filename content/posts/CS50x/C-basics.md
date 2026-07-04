@@ -14,7 +14,7 @@ password: "Mahangmh370.."
 }
 ```
 
-```C
+```c
     #include <stdio.h>
     int main(void){ // 关注这个 int 和 void
 
