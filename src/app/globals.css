@@ -178,3 +178,51 @@ html:not(.dark) .copy-code-btn:hover {
 html:not(.dark) .copy-code-btn.copied {
   color: #22c55e;
 }
+
+/* ===== 图片布局工具类（供 MDX 笔记中使用） ===== */
+
+.note-img-center {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+
+.note-img-right {
+  display: flex;
+  justify-content: flex-end;
+  margin: 1.5rem 0;
+}
+
+.note-img-left {
+  display: flex;
+  justify-content: flex-start;
+  margin: 1.5rem 0;
+}
+
+.note-img-center img,
+.note-img-right img,
+.note-img-left img {
+  border-radius: 0.5rem;
+}
+
+/* 图片说明文字 */
+.note-figcaption {
+  text-align: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+  line-height: 1.5;
+}
+
+html.dark .note-figcaption {
+  color: #9ca3af;
+}
+
+/* 图片并排容器 */
+.note-img-row {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 1.5rem 0;
+}

@@ -4,7 +4,7 @@
         <title>航的笔记本</title>
         <link>https://mhang.cc</link>
         <description>航的技术博客，记录学习与思考</description>
-        <lastBuildDate>Thu, 02 Jul 2026 20:52:51 GMT</lastBuildDate>
+        <lastBuildDate>Sat, 04 Jul 2026 10:42:39 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>zh-CN</language>
@@ -15,6 +15,25 @@
         </image>
         <copyright>All rights reserved 2026, 航的笔记本</copyright>
         <atom:link href="https://mhang.cc/rss.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[图片排版测试]]></title>
+            <link>https://mhang.cc/posts/image-layout-test</link>
+            <guid>https://mhang.cc/posts/image-layout-test</guid>
+            <pubDate>Sat, 04 Jul 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[测试图片的缩放、居中、居左、居右等排版效果]]></description>
+            <category>图片</category>
+            <category>排版</category>
+            <category>测试</category>
+        </item>
+        <item>
+            <title><![CDATA[加密笔记测试]]></title>
+            <link>https://mhang.cc/posts/encrypted-test</link>
+            <guid>https://mhang.cc/posts/encrypted-test</guid>
+            <pubDate>Fri, 03 Jul 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[这是一篇加密的笔记，需要密码才能查看]]></description>
+            <category>加密</category>
+            <category>测试</category>
+        </item>
         <item>
             <title><![CDATA[数学公式与代码高亮测试]]></title>
             <link>https://mhang.cc/posts/math-code-test</link>

@@ -1,0 +1,298 @@
+---
+title: "如何写一篇笔记"
+description: "从创建文件到部署上线的完整流程指南"
+date: "2026-07-04"
+category: "指南"
+tags: ["教程", "博客"]
+---
+
+## 整体流程
+
+写一篇笔记只需要 **3 步**：
+
+1. 在 `content/posts/` 下创建 `.md` 或 `.mdx` 文件
+2. 写好 frontmatter 和正文
+3. 运行 `./deploy.sh` 部署到服务器
+
+---
+
+## 第 1 步：创建文件
+
+在项目的 `content/posts/` 目录下创建一个新文件：
+
+```bash
+# 文件名就是 URL 路径名
+# 例如 my-first-note.md → 网址是 /notes/my-first-note
+content/posts/my-first-note.md
+```
+
+### 文件格式选择
+
+| 格式 | 何时使用 |
+|------|----------|
+| `.md` | 纯 Markdown 内容（大多数情况用这个） |
+| `.mdx` | 需要用 HTML/JSX 标签（如图片居中、并排） |
+
+### 子文件夹
+
+你可以在 `content/posts/` 下创建子文件夹来分类管理，**文件夹名不会出现在 URL 中**：
+
+```
+content/posts/
+├── welcome.mdx              → /notes/welcome
+├── 前端/
+│   ├── react-hooks.md       → /notes/react-hooks
+│   └── nextjs-tips.md       → /notes/nextjs-tips
+└── 随笔/
+    └── daily.md             → /notes/daily
+```
+
+> 文件名不要重复，否则会冲突。文件夹仅用于本地整理。
+
+---
+
+## 第 2 步：写 frontmatter
+
+每个笔记文件**必须**以 YAML frontmatter 开头（`---` 包裹）：
+
+```yaml
+---
+title: "我的第一篇笔记"
+description: "这是一篇关于 XX 的笔记"
+date: "2026-07-04"
+category: "随笔"
+tags: ["标签1", "标签2"]
+---
+```
+
+### 字段说明
+
+| 字段 | 必填 | 类型 | 说明 |
+|------|------|------|------|
+| `title` | ✅ | 字符串 | 文章标题，显示在页面和列表中 |
+| `description` | ✅ | 字符串 | 一句话描述，用于 SEO 和列表预览 |
+| `date` | ✅ | 字符串 | 发布日期，格式 `YYYY-MM-DD`，决定排序 |
+| `category` | ✅ | 字符串 | 分类名（如"随笔"、"前端"、"工具"） |
+| `tags` | ✅ | 数组 | 标签数组，如 `["React", "CSS"]` |
+| `draft` | ❌ | 布尔值 | `true` 时不显示在网站上，默认 `false` |
+| `password` | ❌ | 字符串 | 设置后文章会被加密，访问需输入密码 |
+
+### 加密文章示例
+
+```yaml
+---
+title: "私密笔记"
+description: "需要密码才能查看"
+date: "2026-07-04"
+category: "私密"
+tags: ["私密"]
+password: "my-secret-password"
+---
+```
+
+> 加密文章的正文会在构建时被 AES 加密，每次访问都需要输入密码。
+
+---
+
+## 第 3 步：写正文
+
+frontmatter 下面的部分就是正文，完全使用 Markdown 语法。支持的功能：
+
+### 基础语法
+
+```markdown
+**粗体**  *斜体*  ~~删除线~  `行内代码`
+
+[链接文字](https://example.com)
+
+> 引用块
+
+- 无序列表
+- 第二项
+
+1. 有序列表
+2. 第二项
+```
+
+### 代码高亮
+
+支持 200+ 种语言，可标注文件名和行高亮：
+
+````markdown
+```typescript {3}
+function greet(name: string) {
+  const message = `Hello, ${name}!`; // 这一行会被高亮
+  return message;
+}
+```
+````
+
+### 数学公式
+
+```markdown
+行内公式 $E = mc^2$
+
+块级公式：
+$$
+\frac{n!}{k!(n-k)!} = \binom{n}{k}
+$$
+```
+
+### 表格
+
+```markdown
+| 列1 | 列2 | 列3 |
+|-----|-----|-----|
+| A   | B   | C   |
+```
+
+### 图片
+
+**第 1 步**：把图片放到 `public/images/` 目录下
+
+```
+public/images/
+├── screenshot.png
+├── diagram.svg
+└── photo.jpg
+```
+
+**第 2 步**：在 Markdown 中引用（路径以 `/images/` 开头）
+
+```markdown
+![图片描述](/images/screenshot.png)
+```
+
+#### 图片排版
+
+**默认居左**（标准 Markdown 语法）：
+
+```markdown
+![描述](/images/photo.jpg)
+```
+
+**居中**（需要 `.mdx` 文件）：
+
+```jsx
+<div className="note-img-center">
+  <img src="/images/photo.jpg" alt="描述" width={400} />
+</div>
+```
+
+**居右**：
+
+```jsx
+<div className="note-img-right">
+  <img src="/images/photo.jpg" alt="描述" width={400} />
+</div>
+```
+
+**指定宽度**（数字不要加引号）：
+
+```jsx
+<img src="/images/photo.jpg" alt="描述" width={300} />
+```
+
+**百分比宽度**：
+
+```jsx
+<img src="/images/photo.jpg" alt="描述" style={{ width: "50%" }} />
+```
+
+**带说明文字**：
+
+```jsx
+<div className="note-img-center">
+  <figure>
+    <img src="/images/photo.jpg" alt="描述" width={400} />
+    <figcaption className="note-figcaption">图 1：这是说明文字</figcaption>
+  </figure>
+</div>
+```
+
+**多图并排**：
+
+```jsx
+<div className="note-img-row">
+  <img src="/images/a.jpg" alt="A" width={200} />
+  <img src="/images/b.jpg" alt="B" width={200} />
+</div>
+```
+
+> ⚠️ 使用 HTML 标签（`<div>`、`<img>` 等）时，文件必须保存为 `.mdx` 格式。
+
+---
+
+## 第 4 步：部署
+
+写完笔记后，一条命令部署：
+
+```bash
+./deploy.sh
+```
+
+这个脚本会自动完成：
+1. `npm run build` — 构建静态站点
+2. 打包 `out/` 目录
+3. `scp` 上传到服务器（120.26.254.10）
+4. 在服务器上解压到 `/var/www/mhang-blog/`
+5. `nginx -s reload` 刷新
+
+部署完成后，访问 `http://120.26.254.10/notes/你的文件名` 即可看到新笔记。
+
+### 只在本地预览（不上线）
+
+```bash
+npm run build && npm run start
+# 然后浏览器打开 http://localhost:3000/notes/你的文件名
+```
+
+---
+
+## 快速复用模板
+
+项目已内置模板文件 `content/posts/_template.md`（以 `_` 开头不会显示在网站上）。
+
+**最快的方式**：
+
+```bash
+cp content/posts/_template.md content/posts/my-note.md
+# 然后编辑 my-note.md，修改 title / date / 正文
+# 最后 ./deploy.sh
+```
+
+---
+
+## 常见问题
+
+### 文件名有什么规则？
+
+- 用英文、数字、连字符：`my-first-note.md`
+- 不要用空格和中文（URL 会变成编码）
+- 文件名 = URL 路径名：`react-hooks.md` → `/notes/react-hooks`
+
+### date 日期怎么填？
+
+格式 `YYYY-MM-DD`，如 `2026-07-04`。日期决定笔记在列表中的排序（新的在前）。
+
+### 怎么让文章暂时不显示？
+
+在 frontmatter 中加 `draft: true`：
+
+```yaml
+draft: true
+```
+
+### 图片支持哪些格式？
+
+`.png`、`.jpg`、`.jpeg`、`.gif`、`.svg`、`.webp` 都可以。推荐 `.webp`（体积小）或 `.svg`（矢量图）。
+
+### 写完忘了部署怎么办？
+
+部署前可以先本地预览：
+
+```bash
+npm run build && npm run start
+```
+
+确认没问题再 `./deploy.sh`。
