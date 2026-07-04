@@ -36,6 +36,7 @@
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.2",
     "shiki": "^1.24.0",
+    "suncalc": "^2.0.0",
     "tailwind-merge": "^3.2.0",
     "unified": "^11.0.5"
   },
@@ -44,6 +45,7 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/suncalc": "^1.9.2",
     "autoprefixer": "^10.4.20",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",

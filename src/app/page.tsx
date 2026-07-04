@@ -1,18 +1,25 @@
 "use client";
 
 import Image from "next/image";
-import { useTheme } from "next-themes";
+import { useThemeMode } from "@/components/ui/ThemeProvider";
 import { useEffect, useState } from "react";
 
 export default function HomePage() {
-  const { resolvedTheme, setTheme } = useTheme();
+  const { mode, setMode } = useThemeMode();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const isDark = mounted && resolvedTheme === "dark";
+  // Cycle: light → dark → auto → light
+  const cycleTheme = () => {
+    if (mode === "light") setMode("dark");
+    else if (mode === "dark") setMode("auto");
+    else setMode("light");
+  };
+
+  const label = mode === "light" ? "浅色" : mode === "dark" ? "深色" : "自动";
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center px-4">
@@ -88,17 +95,24 @@ export default function HomePage() {
         </p>
       </footer>
 
-      {/* Color mode toggle — 右下角固定，模仿 TonyCrane */}
+      {/* Color mode toggle — 右下角固定，三态切换 */}
       {mounted && (
         <button
-          onClick={() => setTheme(isDark ? "light" : "dark")}
+          onClick={cycleTheme}
           className="fixed bottom-4 right-4 z-50 flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 transition-colors hover:text-[#5887FC] dark:text-gray-300 dark:hover:text-[#0072ff]"
-          aria-label="切换主题"
+          aria-label={`切换主题（当前：${label}）`}
+          title={`主题：${label}`}
         >
-          {isDark ? (
+          {mode === "light" && (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 7a5 5 0 0 1 5 5a5 5 0 0 1-5 5a5 5 0 0 1-5-5a5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3m0-7l2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10l1.76-3.77a7.13 7.13 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10l-4.14.36c.59-.51 1.12-1.14 1.54-1.86c.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44c.82 0 1.63-.17 2.37-.44z"/></svg>
-          ) : (
+          )}
+          {mode === "dark" && (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          )}
+          {mode === "auto" && (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2a10 10 0 1 0 0 20a10 10 0 1 0 0-20zm0 2v16a8 8 0 0 1 0-16z"/>
+            </svg>
           )}
         </button>
       )}

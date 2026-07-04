@@ -7,6 +7,18 @@ import { BackToTop } from "@/components/post/BackToTop";
 import { SearchDialog } from "@/components/search/SearchDialog";
 import { siteConfig } from "@/lib/site";
 
+/**
+ * 防闪烁内联脚本：在 React 水合前根据偏好设置正确的 dark class。
+ *
+ * - "light" / "dark"：直接设置
+ * - "auto"：用简单时间启发式（6:30~18:30 = 白天）估算，避免闪烁。
+ *   React 水合后 useThemeMode 会用 suncalc 精确计算并纠正。
+ *
+ * 脚本放在 <head> 中，先于 next-themes 的 <body> 内联脚本执行，
+ * 同时将结果写入 "theme" key，让 next-themes 读到正确值。
+ */
+const themeInitScript = `(function(){try{var m=localStorage.getItem('theme-mode')||'light';var d=false;if(m==='dark')d=true;else if(m==='auto'){var n=new Date();var t=n.getHours()*60+n.getMinutes();d=t<390||t>=1110}var r=document.documentElement;if(d)r.classList.add('dark');else r.classList.remove('dark');localStorage.setItem('theme',d?'dark':'light')}catch(e){}})()`;
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
@@ -40,6 +52,7 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/style.css"
