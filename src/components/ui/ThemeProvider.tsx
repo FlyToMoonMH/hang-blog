@@ -31,7 +31,7 @@ export function useThemeMode() {
 
 function ThemeModeResolver({ children }: { children: React.ReactNode }) {
   const { setTheme, resolvedTheme } = useTheme();
-  const [mode, setModeState] = useState<ThemeMode>("light");
+  const [mode, setModeState] = useState<ThemeMode>("auto");
   const [mounted, setMounted] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -39,7 +39,7 @@ function ThemeModeResolver({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setMounted(true);
     const stored =
-      (localStorage.getItem("theme-mode") as ThemeMode | null) || "light";
+      (localStorage.getItem("theme-mode") as ThemeMode | null) || "auto";
     setModeState(stored);
   }, []);
 

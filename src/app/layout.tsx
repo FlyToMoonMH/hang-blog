@@ -17,7 +17,7 @@ import { siteConfig } from "@/lib/site";
  * 脚本放在 <head> 中，先于 next-themes 的 <body> 内联脚本执行，
  * 同时将结果写入 "theme" key，让 next-themes 读到正确值。
  */
-const themeInitScript = `(function(){try{var m=localStorage.getItem('theme-mode')||'light';var d=false;if(m==='dark')d=true;else if(m==='auto'){var n=new Date();var t=n.getHours()*60+n.getMinutes();d=t<390||t>=1110}var r=document.documentElement;if(d)r.classList.add('dark');else r.classList.remove('dark');localStorage.setItem('theme',d?'dark':'light')}catch(e){}})()`;
+const themeInitScript = `(function(){try{var m=localStorage.getItem('theme-mode')||'auto';var d=false;if(m==='dark')d=true;else if(m==='auto'){var n=new Date();var t=n.getHours()*60+n.getMinutes();d=t<390||t>=1110}var r=document.documentElement;if(d)r.classList.add('dark');else r.classList.remove('dark');localStorage.setItem('theme',d?'dark':'light')}catch(e){}})()`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
