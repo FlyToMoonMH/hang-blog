@@ -61,7 +61,7 @@ export function ThemeToggle() {
         </svg>
       )}
       {mode === "auto" && (
-        // Brightness-auto — sun + moon + stars hybrid (MkDocs Material)
+        // Combined sun + moon: left half sun ring, right half crescent moon + star
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="18"
@@ -69,7 +69,14 @@ export function ThemeToggle() {
           viewBox="0 0 24 24"
           fill="currentColor"
         >
-          <path d="M7.5 2c-1.79 1.15-3 3.18-3 5.5s1.21 4.35 3.03 5.5C4.46 13 2 10.54 2 7.5A5.5 5.5 0 0 1 7.5 2m11.57 1.5 1.43 1.43L4.93 20.5 3.5 19.07zm-6.18 2.43L11.41 5 9.97 6l.42-1.7L9 3.24l1.75-.12.58-1.65L12 3.1l1.73.03-1.35 1.13zm-3.3 3.61-1.16-.73-1.12.78.34-1.32-1.09-.83 1.36-.09.45-1.29.51 1.27 1.36.03-1.05.87zM19 13.5a5.5 5.5 0 0 1-5.5 5.5c-1.22 0-2.35-.4-3.26-1.07l7.69-7.69c.67.91 1.07 2.04 1.07 3.26m-4.4 6.58 2.77-1.15-.24 3.35zm4.33-2.7 1.15-2.77 2.2 2.54zm1.15-4.96-1.14-2.78 3.34.24zM9.63 18.93l2.77 1.15-2.53 2.19z" />
+          {/* Sun rays (from weather-sunny) */}
+          <path d="M12 2l2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10l1.76-3.77a7.13 7.13 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10l-4.14.36c.59-.51 1.12-1.14 1.54-1.86c.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44c.82 0 1.63-.17 2.37-.44z" />
+          {/* Left half: sun ring (outer arc + inner arc) */}
+          <path d="M12 7A5 5 0 0 0 12 17L12 15A3 3 0 0 0 12 9Z" />
+          {/* Right half: crescent moon */}
+          <path d="M12 7A5 5 0 0 1 12 17Q15 12 12 7Z" />
+          {/* Star (from weather-night, representing night) */}
+          <path d="M17 1.5L17.75 3.25L19.5 4L17.75 4.75L17 6.5L16.25 4.75L14.5 4L16.25 3.25Z" />
         </svg>
       )}
     </button>
