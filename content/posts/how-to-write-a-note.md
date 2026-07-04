@@ -10,7 +10,7 @@ tags: ["教程", "博客"]
 
 写一篇笔记只需要 **3 步**：
 
-1. 在 `content/posts/` 下创建 `.md` 或 `.mdx` 文件
+1. 在 `content/posts/` 下创建 `.md` 文件
 2. 写好 frontmatter 和正文
 3. 运行 `./deploy.sh` 部署到服务器
 
@@ -26,20 +26,17 @@ tags: ["教程", "博客"]
 content/posts/my-first-note.md
 ```
 
-### 文件格式选择
+### 文件格式
 
-| 格式 | 何时使用 |
-|------|----------|
-| `.md` | 纯 Markdown 内容（大多数情况用这个） |
-| `.mdx` | 需要用 HTML/JSX 标签（如图片居中、并排） |
+所有笔记统一使用 `.md` 格式，支持完整的 Markdown 语法和 `<NoteImage>` 组件。
 
 ### 子文件夹
 
 你可以在 `content/posts/` 下创建子文件夹来分类管理，**文件夹名不会出现在 URL 中**：
 
-```bash
+```text
 content/posts/
-├── welcome.mdx              → /notes/welcome
+├── welcome.md               → /notes/welcome
 ├── 前端/
 │   ├── react-hooks.md       → /notes/react-hooks
 │   └── nextjs-tips.md       → /notes/nextjs-tips
@@ -165,7 +162,7 @@ public/images/
 
 #### 图片排版
 
-使用 `<NoteImage>` 组件控制对齐和大小（文件需保存为 `.mdx`）：
+使用 `<NoteImage>` 组件控制对齐和大小：
 
 **居中**（默认）：
 
@@ -207,7 +204,7 @@ public/images/
 | `align` | 字符串 | `"center"` | `"center"` / `"left"` / `"right"` |
 | `caption` | 字符串 | 无 | 图片下方的说明文字 |
 
-> ⚠️ 使用 `<NoteImage>` 组件时，文件必须保存为 `.mdx` 格式。
+> ⚠️ `<NoteImage>` 组件在 `.md` 文件中即可使用，无需 `.mdx` 格式。
 
 ---
 

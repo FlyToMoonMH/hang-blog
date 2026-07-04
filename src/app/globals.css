@@ -32,12 +32,13 @@ body {
 /* ===== Code blocks (Shiki + fallback) ===== */
 
 /* rehype-pretty-code dark/light theme switching */
+/* fallback values ensure text/lang blocks without Shiki colors remain readable */
 html.dark [data-rehype-pretty-code-figure] span {
-  color: var(--shiki-dark) !important;
+  color: var(--shiki-dark, #c0caf5) !important;
 }
 
 [data-rehype-pretty-code-figure] span {
-  color: var(--shiki-light) !important;
+  color: var(--shiki-light, #24292e) !important;
 }
 
 /* Shiki code block background */
