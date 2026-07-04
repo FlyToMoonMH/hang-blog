@@ -33,21 +33,6 @@ export interface TagInfo {
   count: number;
 }
 
-export interface Comment {
-  id: string;
-  slug: string;
-  name: string;
-  content: string;
-  createdAt: string;
-  parentId?: string | null;
-  replies?: Comment[];
-}
-
-export interface LikeData {
-  slug: string;
-  count: number;
-}
-
 export interface SidebarItem {
   title: string;
   slug?: string;
