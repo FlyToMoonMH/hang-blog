@@ -68,7 +68,7 @@ function SidebarNode({
 
   return (
     <Link
-      href={item.slug ? `/notes/${item.slug}` : "#"}
+      href={item.slug ? `/${item.slug}` : "#"}
       className={`block py-1.5 text-sm transition-colors ${
         isActive
           ? "font-semibold text-blue-600 dark:text-blue-400"
@@ -83,9 +83,15 @@ function SidebarNode({
 
 export function Sidebar({ items }: { items: SidebarItem[] }) {
   const pathname = usePathname();
-  const activeSlug = pathname.startsWith("/notes/")
-    ? pathname.replace("/notes/", "").replace(/\/$/, "")
-    : "";
+  // 排除功能页，只在笔记详情页高亮
+  const isFunctionalPage =
+    pathname === "/" ||
+    pathname.startsWith("/categories") ||
+    pathname.startsWith("/tags") ||
+    pathname.startsWith("/about");
+  const activeSlug = isFunctionalPage
+    ? ""
+    : pathname.replace(/^\//, "").replace(/\/$/, "");
 
   const [expandedSet, setExpandedSet] = useState<Set<string>>(new Set());
 

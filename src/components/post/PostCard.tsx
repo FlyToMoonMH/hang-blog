@@ -28,7 +28,7 @@ export function PostCard({ post }: { post: Post }) {
 
       <h2 className="mt-2 text-xl font-semibold tracking-tight">
         <Link
-          href={`/notes/${slug}`}
+          href={`/${slug}`}
           className="text-gray-900 transition-colors hover:text-accent dark:text-gray-100 dark:hover:text-blue-400"
         >
           {frontmatter.title}

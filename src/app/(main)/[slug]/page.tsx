@@ -32,7 +32,7 @@ export function generateMetadata({
       openGraph: {
         title: post.frontmatter.title,
         description: post.frontmatter.description,
-        url: `${siteConfig.url}/notes/${post.slug}`,
+        url: `${siteConfig.url}/${post.slug}`,
         type: "article",
         publishedTime: post.frontmatter.date,
         tags: post.frontmatter.tags,

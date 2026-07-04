@@ -5,8 +5,6 @@ export const siteConfig = {
   locale: "zh-CN",
   author: "航",
   nav: [
-    { title: "首页", href: "/" },
-    { title: "笔记", href: "/notes/" },
     { title: "分类", href: "/categories" },
     { title: "标签", href: "/tags" },
     { title: "关于", href: "/about" },

@@ -116,7 +116,7 @@ export function SearchDialog() {
       setSelectedIndex((i) => Math.max(i - 1, 0));
     } else if (e.key === "Enter" && results[selectedIndex]) {
       e.preventDefault();
-      window.location.href = `/notes/${results[selectedIndex].slug}`;
+      window.location.href = `/${results[selectedIndex].slug}`;
     }
   };
 
@@ -174,7 +174,7 @@ export function SearchDialog() {
             results.map((result, i) => (
               <Link
                 key={result.slug}
-                href={`/notes/${result.slug}`}
+                href={`/${result.slug}`}
                 onClick={() => setIsOpen(false)}
                 className={`block rounded-lg px-3 py-2.5 transition-colors ${
                   i === selectedIndex

@@ -2,8 +2,8 @@ import Image from "next/image";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About - MHang",
-  description: "MHang 个人简历",
+  title: "关于 - MHang",
+  description: "MHang 个人简介",
 };
 
 export default function AboutPage() {
@@ -24,17 +24,29 @@ export default function AboutPage() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
             MHang
           </h1>
-          <div className="mt-1 flex flex-wrap gap-3 text-sm text-gray-500 dark:text-gray-400">
-            <a href="mailto:hi@mhang.cc" className="transition-colors hover:text-blue-500">
-              hi@mhang.cc
+          <div className="mt-2 flex items-center gap-3">
+            <a
+              href="https://github.com/FlyToMoonMH"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-500 transition-colors hover:text-blue-500 dark:text-gray-400"
+              title="GitHub"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5c.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34c-.46-1.16-1.11-1.47-1.11-1.47c-.91-.62.07-.6.07-.6c1 .07 1.53 1.03 1.53 1.03c.87 1.52 2.34 1.07 2.91.83c.09-.65.35-1.09.63-1.34c-2.22-.25-4.55-1.11-4.55-4.92c0-1.11.38-2 1.03-2.71c-.1-.25-.45-1.29.1-2.64c0 0 .84-.27 2.75 1.02c.79-.22 1.65-.33 2.5-.33s1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02c.55 1.35.2 2.39.1 2.64c.65.71 1.03 1.6 1.03 2.71c0 3.82-2.34 4.66-4.57 4.91c.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2"/></svg>
             </a>
-            <span className="text-gray-300 dark:text-gray-700">|</span>
-            <a href="https://github.com/FlyToMoonMH" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-blue-500">
-              GitHub
+            <a
+              href="mailto:mahang23@mails.ucas.ac.cn"
+              className="text-gray-500 transition-colors hover:text-blue-500 dark:text-gray-400"
+              title="Email"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12v1.45q0 1.475-1.012 2.513T18.5 17q-.875 0-1.65-.375t-1.3-1.075q-.725.725-1.638 1.088T12 17q-2.075 0-3.537-1.463T7 12t1.463-3.537T12 7t3.538 1.463T17 12v1.45q0 .65.425 1.1T18.5 15t1.075-.45t.425-1.1V12q0-3.35-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20h5v2zm0-7q1.25 0 2.125-.875T15 12t-.875-2.125T12 9t-2.125.875T9 12t.875 2.125T12 15"/></svg>
             </a>
-            <span className="text-gray-300 dark:text-gray-700">|</span>
-            <a href="https://mhang.cc" className="transition-colors hover:text-blue-500">
-              mhang.cc
+            <a
+              href="https://mhang.cc"
+              className="text-gray-500 transition-colors hover:text-blue-500 dark:text-gray-400"
+              title="mhang.cc"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5a5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1c0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5a5 5 0 0 0-5-5"/></svg>
             </a>
           </div>
         </div>
@@ -125,10 +137,10 @@ export default function AboutPage() {
       {/* Back */}
       <div className="mt-8">
         <a
-          href="/notes/"
+          href="/"
           className="text-sm text-gray-500 transition-colors hover:text-blue-500 dark:text-gray-400"
         >
-          ← 返回笔记本
+          ← 返回首页
         </a>
       </div>
     </div>
