@@ -41,13 +41,11 @@ console.log(greeting);
 
 ### 图片
 
-默认居左：
+默认居左（标准 Markdown）：
 ![描述文字](/images/your-image.png)
 
-居中：
-<div className="note-img-center">
-  <img src="/images/your-image.png" alt="描述" width={400} />
-</div>
+居中/居右/缩放/带说明（需要 .mdx 文件，用 NoteImage 组件）：
+<NoteImage src="/images/your-image.png" alt="描述" width="400" align="center" caption="说明文字" />
 
 ### 数学公式
 

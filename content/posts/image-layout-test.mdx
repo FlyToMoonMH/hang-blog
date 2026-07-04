@@ -8,7 +8,7 @@ tags: ["图片", "排版", "测试"]
 
 ## 1. 标准 Markdown 图片（默认居左）
 
-使用标准 Markdown 语法插入图片，默认靠左对齐，宽度为图片原始尺寸：
+使用标准 Markdown 语法插入图片，默认靠左对齐：
 
 ![Blue Banner](/images/test-blue.svg)
 
@@ -16,43 +16,35 @@ tags: ["图片", "排版", "测试"]
 
 ## 2. 居中对齐
 
-使用 `note-img-center` 类实现居中：
-
-<div className="note-img-center">
-  <img src="/images/test-red.svg" alt="Red Banner" width={400} />
-</div>
+<NoteImage src="/images/test-red.svg" alt="Red Banner" width="400" align="center" />
 
 ---
 
 ## 3. 居右对齐
 
-使用 `note-img-right` 类实现居右：
-
-<div className="note-img-right">
-  <img src="/images/test-green.svg" alt="Green Banner" width={400} />
-</div>
+<NoteImage src="/images/test-green.svg" alt="Green Banner" width="400" align="right" />
 
 ---
 
-## 4. 缩放测试
+## 4. 居左对齐
+
+<NoteImage src="/images/test-blue.svg" alt="Blue Banner" width="400" align="left" />
+
+---
+
+## 5. 缩放测试
 
 ### 小尺寸（200px 宽）
 
-<div className="note-img-center">
-  <img src="/images/test-blue.svg" alt="Small 200px" width={200} />
-</div>
+<NoteImage src="/images/test-blue.svg" alt="Small 200px" width="200" />
 
 ### 中等尺寸（400px 宽）
 
-<div className="note-img-center">
-  <img src="/images/test-red.svg" alt="Medium 400px" width={400} />
-</div>
+<NoteImage src="/images/test-red.svg" alt="Medium 400px" width="400" />
 
 ### 大尺寸（600px 宽）
 
-<div className="note-img-center">
-  <img src="/images/test-green.svg" alt="Large 600px" width={600} />
-</div>
+<NoteImage src="/images/test-green.svg" alt="Large 600px" width="600" />
 
 ### 原始尺寸（800px 宽，满宽）
 
@@ -60,60 +52,31 @@ tags: ["图片", "排版", "测试"]
 
 ---
 
-## 5. 百分比宽度
+## 6. 百分比宽度
 
 ### 50% 宽度
 
-<div className="note-img-center">
-  <img src="/images/test-red.svg" alt="50% width" style={{ width: "50%" }} />
-</div>
+<NoteImage src="/images/test-red.svg" alt="50% width" width="50%" />
 
 ### 25% 宽度
 
-<div className="note-img-center">
-  <img src="/images/test-green.svg" alt="25% width" style={{ width: "25%" }} />
-</div>
+<NoteImage src="/images/test-green.svg" alt="25% width" width="25%" />
 
 ### 75% 宽度
 
-<div className="note-img-center">
-  <img src="/images/test-blue.svg" alt="75% width" style={{ width: "75%" }} />
-</div>
+<NoteImage src="/images/test-blue.svg" alt="75% width" width="75%" />
 
 ---
 
-## 6. 带说明文字的图片
+## 7. 带说明文字的图片
 
-使用 `<figure>` 标签包裹图片和说明：
-
-<div className="note-img-center">
-  <figure>
-    <img src="/images/test-red.svg" alt="Red Banner" width={400} />
-    <figcaption className="note-figcaption">图 1：这是一张红色横幅测试图片</figcaption>
-  </figure>
-</div>
+<NoteImage src="/images/test-red.svg" alt="Red Banner" width="400" caption="图 1：这是一张红色横幅测试图片" />
 
 ---
 
-## 7. 三张图片并排
+## 8. 组合：居右 + 百分比 + 说明文字
 
-使用 `note-img-row` 类让多张图片并排显示：
-
-<div className="note-img-row">
-  <img src="/images/test-blue.svg" alt="Blue" width={200} />
-  <img src="/images/test-red.svg" alt="Red" width={200} />
-  <img src="/images/test-green.svg" alt="Green" width={200} />
-</div>
-
----
-
-## 8. 居左 + 文字环绕
-
-标准 Markdown 图片天然居左，后续文字会自然跟在图片下方：
-
-![Left aligned](/images/test-red.svg)
-
-上面的图片是靠左对齐的，这段文字自然出现在图片下方。
+<NoteImage src="/images/test-green.svg" alt="Right 50%" width="50%" align="right" caption="图 2：居右 + 50% 宽度 + 带说明" />
 
 ---
 
@@ -122,11 +85,12 @@ tags: ["图片", "排版", "测试"]
 | 效果 | 写法 |
 |------|------|
 | 默认居左 | `![描述](/images/xxx.svg)` |
-| 居中 | `<div className="note-img-center"><img src="..." width={400} /></div>` |
-| 居右 | `<div className="note-img-right"><img src="..." width={400} /></div>` |
-| 指定宽度 | `<img src="..." width={300} />`（数字，不要引号） |
-| 百分比宽 | `<img src="..." style={{ width: "50%" }} />` |
-| 带说明 | `<figure><img .../><figcaption className="note-figcaption">说明</figcaption></figure>` |
-| 并排 | `<div className="note-img-row"><img .../><img .../></div>` |
+| 居中 | `<NoteImage src="..." width="400" align="center" />` |
+| 居右 | `<NoteImage src="..." width="400" align="right" />` |
+| 居左 | `<NoteImage src="..." width="400" align="left" />` |
+| 指定像素宽度 | `<NoteImage src="..." width="300" />` |
+| 百分比宽度 | `<NoteImage src="..." width="50%" />` |
+| 带说明文字 | `<NoteImage src="..." width="400" caption="说明文字" />` |
 
 > **注意**：图片文件放在 `public/images/` 目录下，引用时路径为 `/images/文件名`。
+> 需要图片排版时，文件必须保存为 `.mdx` 格式，使用 `<NoteImage>` 组件。

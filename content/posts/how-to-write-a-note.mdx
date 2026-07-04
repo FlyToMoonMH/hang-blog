@@ -165,61 +165,50 @@ public/images/
 
 #### 图片排版
 
-**默认居左**（标准 Markdown 语法）：
+使用 `<NoteImage>` 组件控制对齐和大小（文件需保存为 `.mdx`）：
 
-```markdown
-![描述](/images/photo.jpg)
-```
-
-**居中**（需要 `.mdx` 文件）：
+**居中**（默认）：
 
 ```jsx
-<div className="note-img-center">
-  <img src="/images/photo.jpg" alt="描述" width={400} />
-</div>
+<NoteImage src="/images/photo.jpg" alt="描述" width="400" />
 ```
 
 **居右**：
 
 ```jsx
-<div className="note-img-right">
-  <img src="/images/photo.jpg" alt="描述" width={400} />
-</div>
+<NoteImage src="/images/photo.jpg" alt="描述" width="400" align="right" />
 ```
 
-**指定宽度**（数字不要加引号）：
+**居左**：
 
 ```jsx
-<img src="/images/photo.jpg" alt="描述" width={300} />
+<NoteImage src="/images/photo.jpg" alt="描述" width="400" align="left" />
 ```
 
 **百分比宽度**：
 
 ```jsx
-<img src="/images/photo.jpg" alt="描述" style={{ width: "50%" }} />
+<NoteImage src="/images/photo.jpg" alt="描述" width="50%" />
 ```
 
 **带说明文字**：
 
 ```jsx
-<div className="note-img-center">
-  <figure>
-    <img src="/images/photo.jpg" alt="描述" width={400} />
-    <figcaption className="note-figcaption">图 1：这是说明文字</figcaption>
-  </figure>
-</div>
+<NoteImage src="/images/photo.jpg" alt="描述" width="400" caption="这是说明文字" />
 ```
 
-**多图并排**：
+### 参数说明
 
-```jsx
-<div className="note-img-row">
-  <img src="/images/a.jpg" alt="A" width={200} />
-  <img src="/images/b.jpg" alt="B" width={200} />
-</div>
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `src` | 字符串 | 必填 | 图片路径，如 `/images/photo.jpg` |
+| `alt` | 字符串 | 空 | 图片描述 |
+| `width` | 字符串 | 无 | `"400"`（像素）或 `"50%"`（百分比），都用引号 |
+| `align` | 字符串 | `"center"` | `"center"` / `"left"` / `"right"` |
+| `caption` | 字符串 | 无 | 图片下方的说明文字 |
 ```
 
-> ⚠️ 使用 HTML 标签（`<div>`、`<img>` 等）时，文件必须保存为 `.mdx` 格式。
+> ⚠️ 使用 `<NoteImage>` 组件时，文件必须保存为 `.mdx` 格式。
 
 ---
 
