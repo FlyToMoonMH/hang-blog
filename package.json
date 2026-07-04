@@ -13,11 +13,9 @@
   "dependencies": {
     "@giscus/react": "^3.1.0",
     "@types/crypto-js": "^4.2.2",
-    "clsx": "^2.1.1",
     "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
     "feed": "^4.2.2",
-    "flexsearch": "^0.8.212",
     "github-slugger": "^2.0.0",
     "gray-matter": "^4.0.3",
     "next": "16.2.10",
@@ -37,7 +35,6 @@
     "remark-rehype": "^11.1.2",
     "shiki": "^1.24.0",
     "suncalc": "^2.0.0",
-    "tailwind-merge": "^3.2.0",
     "unified": "^11.0.5"
   },
   "devDependencies": {

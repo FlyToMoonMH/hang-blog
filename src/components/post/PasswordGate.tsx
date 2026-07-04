@@ -72,7 +72,6 @@ export function PasswordGate({ slug, title }: PasswordGateProps) {
         setDecryptedHtml(html);
       } else {
         setError(true);
-        localStorage.removeItem(`encrypt_${slug}`);
       }
     } catch {
       setError(true);

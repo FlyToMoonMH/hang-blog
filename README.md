@@ -9,16 +9,18 @@
 - **Tailwind CSS v3** + @tailwindcss/typography
 - **MDX** (next-mdx-remote)
 - **rehype-pretty-code** (Shiki 代码高亮)
-- **next-themes** (暗色模式)
+- **next-themes** (暗色/亮色/自动模式)
 - **Giscus** (评论系统)
 
 ## 功能
 
-- 文章展示：MDX 渲染、代码高亮、目录导航、阅读时长
+- 文章展示：Markdown 渲染、代码高亮、目录导航、阅读时长
 - 分类管理：分类页 + 标签云
 - 评论：Giscus 集成
 - SEO：sitemap、RSS、动态 OG 图
-- 暗色/亮色模式
+- 主题：浅色/深色/自动（日出日落感知）
+- 加密笔记：AES-128-CBC 客户端解密
+- 搜索：全文搜索（Cmd/Ctrl+K）
 
 ## 开发
 
@@ -31,9 +33,9 @@ npm run dev
 
 ## 添加文章
 
-在 `content/posts/` 目录下创建 `.mdx` 文件：
+在 `content/posts/` 目录下创建 `.md` 文件，参考 `content/posts/_template.md` 模板：
 
-```mdx
+```markdown
 ---
 title: "文章标题"
 description: "文章描述"
@@ -47,7 +49,11 @@ tags: ["标签1", "标签2"]
 
 ## 部署
 
-推送到 GitHub 后在 Vercel 导入即可。
+```bash
+bash deploy.sh
+```
+
+部署到阿里云服务器，自动构建 + 上传 + 重载 Nginx。
 
 ## 评论配置
 

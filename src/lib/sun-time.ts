@@ -18,7 +18,7 @@ function getEstimatedLocation(): { lat: number; lon: number } {
  * 判断当前时间是否为白天（日出之后、日落之前）
  * 使用 suncalc 根据估算的地理位置计算精确的日出日落时间
  */
-export function isDaytime(): boolean {
+function isDaytime(): boolean {
   const { lat, lon } = getEstimatedLocation();
   const now = new Date();
   const times = getTimes(now, lat, lon);
