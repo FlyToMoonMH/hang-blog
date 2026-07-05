@@ -75,7 +75,7 @@ export function getAllPosts(): Post[] {
       return {
         slug,
         frontmatter,
-        content,
+        content: preparePostContent(content, slug),
         readingTime: `${minutes} 分钟阅读`,
       } as Post;
     })
@@ -91,11 +91,15 @@ export function getAllPosts(): Post[] {
 }
 
 /**
- * 将 MDX 中的相对图片路径重写为网站绝对路径。
+ * 将文章内容中的相对图片路径重写为网站绝对路径。
  *
- * 处理两种格式：
+ * 普通文章和加密文章都共用这一层预处理，
+ * 这样作者始终只需要写一种内容语法。
+ *
+ * 处理三种格式：
  *   ![描述](images/xxx.png)                   → ![描述](/images/posts/{slug}/images/xxx.png)
  *   <NoteImage src="images/xxx.png" ...>      → <NoteImage src="/images/posts/{slug}/images/xxx.png" ...>
+ *   <img src="images/xxx.png" ...>            → <img src="/images/posts/{slug}/images/xxx.png" ...>
  *
  * 这样写笔记时一律用相对路径 images/xxx.png：
  * - VS Code 预览支持标准 ![]() 图片（相对路径天生可用）
@@ -121,7 +125,23 @@ export function rewriteImagePaths(content: string, slug: string): string {
     `$1'/images/posts/${slug}/images/$2'`
   );
 
+  // 原生 HTML 图片：<img src="images/..." （双引号）
+  result = result.replace(
+    /(<img\s[^>]*\bsrc=)"images\/([^"]+)"/g,
+    `$1"/images/posts/${slug}/images/$2"`
+  );
+
+  // 原生 HTML 图片：<img src='images/...' （单引号）
+  result = result.replace(
+    /(<img\s[^>]*\bsrc=)'images\/([^']+)'/g,
+    `$1'/images/posts/${slug}/images/$2'`
+  );
+
   return result;
+}
+
+export function preparePostContent(content: string, slug: string): string {
+  return rewriteImagePaths(content, slug);
 }
 
 export function getPostBySlug(slug: string): Post | null {
@@ -140,7 +160,7 @@ export function getPostBySlug(slug: string): Post | null {
       return {
         slug,
         frontmatter,
-        content,
+        content: preparePostContent(content, slug),
         readingTime: `${minutes} 分钟阅读`,
       };
     }

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getAllTags, getPostsByTag } from "@/lib/posts";
+import { decodeRouteParam } from "@/lib/route-params";
 import { PostList } from "@/components/post/PostList";
 
 export function generateStaticParams() {
@@ -13,8 +14,9 @@ export function generateMetadata({
 }): Promise<{ title: string; description: string }> {
   return (async () => {
     const { tag } = await params;
+    const decodedTag = decodeRouteParam(tag);
     const tags = getAllTags();
-    const t = tags.find((t) => t.slug === tag);
+    const t = tags.find((t) => t.slug === decodedTag);
 
     if (!t) return { title: "标签", description: "" };
 
@@ -31,14 +33,15 @@ export default async function TagPage({
   params: Promise<{ tag: string }>;
 }) {
   const { tag } = await params;
+  const decodedTag = decodeRouteParam(tag);
   const tags = getAllTags();
-  const t = tags.find((t) => t.slug === tag);
+  const t = tags.find((t) => t.slug === decodedTag);
 
   if (!t) {
     notFound();
   }
 
-  const posts = getPostsByTag(tag);
+  const posts = getPostsByTag(decodedTag);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">

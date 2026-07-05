@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getAllCategories, getPostsByCategory } from "@/lib/posts";
+import { decodeRouteParam } from "@/lib/route-params";
 import { PostList } from "@/components/post/PostList";
 
 export function generateStaticParams() {
@@ -13,8 +14,9 @@ export function generateMetadata({
 }): Promise<{ title: string; description: string }> {
   return (async () => {
     const { category } = await params;
+    const decodedCategory = decodeRouteParam(category);
     const categories = getAllCategories();
-    const cat = categories.find((c) => c.slug === category);
+    const cat = categories.find((c) => c.slug === decodedCategory);
 
     if (!cat) return { title: "分类", description: "" };
 
@@ -31,14 +33,15 @@ export default async function CategoryPage({
   params: Promise<{ category: string }>;
 }) {
   const { category } = await params;
+  const decodedCategory = decodeRouteParam(category);
   const categories = getAllCategories();
-  const cat = categories.find((c) => c.slug === category);
+  const cat = categories.find((c) => c.slug === decodedCategory);
 
   if (!cat) {
     notFound();
   }
 
-  const posts = getPostsByCategory(category);
+  const posts = getPostsByCategory(decodedCategory);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">

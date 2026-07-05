@@ -29,7 +29,14 @@ content/posts/my-first-note.md
 
 ### 文件格式
 
-所有笔记统一使用 `.md` 格式，支持完整的 Markdown 语法和 `<NoteImage>` 组件。
+所有笔记统一使用 `.md` 格式。
+
+如果你平时主要是在 **VS Code 里写 Markdown 并实时预览**，推荐优先使用：
+
+- 标准 Markdown 语法
+- 少量原生 HTML（例如 `<img>`）做图片缩放
+
+`<NoteImage>` 可以用，但它更适合网站最终展示，不适合当作本地 Markdown 预览的主方案。
 
 ### 子文件夹
 
@@ -164,9 +171,46 @@ content/posts/CS50x/
 
 > **为什么用相对路径？** 这样 VS Code 的 Markdown 预览能正常显示；网站渲染时会自动把它解析到当前文章对应的图片目录。
 
-#### 图片排版
+#### 统一图片写法
 
-使用 `<NoteImage>` 组件控制对齐和大小。**路径也用相对路径**（和标准 Markdown 图片一样）：
+这个项目现在的推荐规则是：
+
+- 普通图片：用标准 Markdown `![]()`
+- 需要缩放/居中：用原生 HTML `<img>`
+- 普通文章和加密文章，**写法完全一致**
+
+也就是说，你不需要区分“这篇是不是加密文章”再换语法。
+
+#### VS Code 实时预览里缩放图片
+
+如果你想在 **VS Code 预览里直接看到缩放效果**，推荐直接用 HTML 的 `<img>`：
+
+**固定宽度**：
+
+```html
+<img src="images/photo.jpg" alt="描述" width="400" />
+```
+
+**百分比宽度**：
+
+```html
+<img src="images/photo.jpg" alt="描述" style="width: 50%;" />
+```
+
+**居中 + 缩放**：
+
+```html
+<div align="center">
+  <img src="images/photo.jpg" alt="描述" width="400" />
+</div>
+```
+
+> 这几种写法在 VS Code 的普通 Markdown 预览里就能直接看到效果。
+> 并且在这个博客里，无论普通文章还是加密文章，都会按同一套规则处理。
+
+#### 网站里专用的图片排版
+
+如果你想在网站里统一控制对齐、宽度、说明文字，也可以使用 `<NoteImage>`。**路径同样写相对路径**：
 
 **居中**（默认）：
 
@@ -175,7 +219,7 @@ content/posts/CS50x/
 ```
 
 > `<NoteImage>` 的图片路径和 `![]()` 一样用相对路径 `images/xxx.png`，渲染时会自动解析。
-> 纯 Markdown 预览器通常不会执行 `<NoteImage>` 这类组件；要看它的最终排版，需要用 `npm run dev` 在浏览器里预览。
+> 纯 Markdown 预览器通常不会执行 `<NoteImage>` 这类组件；如果你主要依赖 VS Code 本地预览，请优先用 `<img>`。
 
 **居右**：
 
@@ -211,7 +255,8 @@ content/posts/CS50x/
 | `align` | 字符串 | `"center"` | `"center"` / `"left"` / `"right"` |
 | `caption` | 字符串 | 无 | 图片下方的说明文字 |
 
-> ⚠️ `<NoteImage>` 组件在 `.md` 文件中即可使用，无需 `.mdx` 格式。
+> ⚠️ 整个项目日常写作统一按 `.md` 来写，不需要切到 `.mdx`。
+> ⚠️ 如果你想要最稳定、最通用、最不容易踩坑的方案，优先用 `<img>`，不要把 `<NoteImage>` 当作必选。
 
 ---
 

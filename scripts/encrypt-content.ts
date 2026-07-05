@@ -12,7 +12,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import CryptoJS from "crypto-js";
-import { rewriteImagePaths } from "../src/lib/posts";
+import { preparePostContent } from "../src/lib/posts";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
@@ -54,7 +54,8 @@ async function markdownToHtml(markdown: string): Promise<string> {
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkMath)
-    .use(remarkRehype)
+    // 保留 Markdown 里的原生 HTML（例如 <img>），供加密文章解密后直接渲染。
+    .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeSlug)
     .use(rehypeAutolinkHeadings, { behavior: "wrap" })
     .use(rehypePrettyCode, {
@@ -62,7 +63,7 @@ async function markdownToHtml(markdown: string): Promise<string> {
       keepBackground: false,
     })
     .use(rehypeKatex, { strict: false, throwOnError: false })
-    .use(rehypeStringify)
+    .use(rehypeStringify, { allowDangerousHtml: true })
     .process(markdown);
 
   return String(file);
@@ -106,7 +107,7 @@ async function main() {
   for (const { filePath, relativePath } of files) {
     const raw = fs.readFileSync(filePath, "utf-8");
     const { data, content } = matter(raw);
-    const frontmatter = data as any;
+    const frontmatter = data as Record<string, unknown>;
 
     if (frontmatter.draft) continue;
     if (!frontmatter.password) continue;
@@ -115,13 +116,13 @@ async function main() {
     console.log(`  → 加密: ${slug}`);
 
     // 重写图片路径（相对路径 → 网站绝对路径）
-    const rewrittenContent = rewriteImagePaths(content, slug);
+    const rewrittenContent = preparePostContent(content, slug);
 
     // 渲染 markdown 为 HTML
     const html = await markdownToHtml(rewrittenContent);
 
     // 加密
-    const encrypted = encryptContent(html, frontmatter.password);
+    const encrypted = encryptContent(html, String(frontmatter.password));
 
     // 输出 JSON
     const outputPath = path.join(OUTPUT_DIR, `${slug}.json`);
@@ -130,7 +131,7 @@ async function main() {
       JSON.stringify({
         iv: encrypted.iv,
         ciphertext: encrypted.ciphertext,
-        title: frontmatter.title,
+        title: String(frontmatter.title || ""),
       })
     );
 

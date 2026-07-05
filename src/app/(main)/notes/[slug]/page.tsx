@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getAllPosts, getPostBySlug, getAdjacentPosts } from "@/lib/posts";
+import { decodeRouteParam } from "@/lib/route-params";
 import { extractToc } from "@/lib/toc";
 import { siteConfig } from "@/lib/site";
 import { PostHeader } from "@/components/post/PostHeader";
@@ -23,7 +24,8 @@ export function generateMetadata({
 }): Promise<Metadata> {
   return (async () => {
     const { slug } = await params;
-    const post = getPostBySlug(slug);
+    const decodedSlug = decodeRouteParam(slug);
+    const post = getPostBySlug(decodedSlug);
     if (!post) return {};
 
     return {
@@ -47,14 +49,15 @@ export default async function PostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const decodedSlug = decodeRouteParam(slug);
+  const post = getPostBySlug(decodedSlug);
 
   if (!post) {
     notFound();
   }
 
   const toc = extractToc(post.content);
-  const { prev, next } = getAdjacentPosts(slug);
+  const { prev, next } = getAdjacentPosts(decodedSlug);
   const isEncrypted = !!post.frontmatter.password;
 
   return (
