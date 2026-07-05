@@ -32,7 +32,7 @@ env -u NODE_OPTIONS node ./node_modules/.bin/next build
 # 4. 打包
 echo "  → 打包构建产物..."
 cd "$TEMP_DIR/out"
-tar czf /tmp/mhang-blog-out.tar.gz .
+COPYFILE_DISABLE=1 tar --no-xattrs -czf /tmp/mhang-blog-out.tar.gz .
 
 # 5. 上传
 echo "  → 上传到服务器..."
