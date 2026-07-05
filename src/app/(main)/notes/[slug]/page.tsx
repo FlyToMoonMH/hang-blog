@@ -65,7 +65,7 @@ export default async function PostPage({
           <PasswordGate slug={post.slug} title={post.frontmatter.title} />
         ) : (
           <PostBody>
-            <MDXContent source={post.content} />
+            <MDXContent source={post.content} postSlug={post.slug} />
           </PostBody>
         )}
         <PostActions title={post.frontmatter.title} />

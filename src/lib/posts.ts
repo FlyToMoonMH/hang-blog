@@ -75,7 +75,7 @@ export function getAllPosts(): Post[] {
       return {
         slug,
         frontmatter,
-        content: rewriteImagePaths(content, slug),
+        content,
         readingTime: `${minutes} 分钟阅读`,
       } as Post;
     })
@@ -91,15 +91,37 @@ export function getAllPosts(): Post[] {
 }
 
 /**
- * 将 MDX 中的相对图片路径重写为构建后的绝对路径
- * images/xxx.png → /images/posts/{slug}/xxx.png
- * 这样 VS Code 预览用相对路径，网站用绝对路径，两边都能正常显示
+ * 将 MDX 中的相对图片路径重写为网站绝对路径。
+ *
+ * 处理两种格式：
+ *   ![描述](images/xxx.png)                   → ![描述](/images/posts/{slug}/images/xxx.png)
+ *   <NoteImage src="images/xxx.png" ...>      → <NoteImage src="/images/posts/{slug}/images/xxx.png" ...>
+ *
+ * 这样写笔记时一律用相对路径 images/xxx.png：
+ * - VS Code 预览支持标准 ![]() 图片（相对路径天生可用）
+ * - <NoteImage> 用 npm run dev 在浏览器里预览
+ * - 构建后所有图片路径自动变为正确的网站绝对路径
  */
-function rewriteImagePaths(content: string, slug: string): string {
-  return content.replace(
+export function rewriteImagePaths(content: string, slug: string): string {
+  // 标准 Markdown 图片：![...](images/...)
+  let result = content.replace(
     /\]\(images\/([^)]+)\)/g,
-    `](/images/posts/${slug}/$1)`
+    `](/images/posts/${slug}/images/$1)`
   );
+
+  // NoteImage 组件：<NoteImage src="images/..." （双引号）
+  result = result.replace(
+    /(<NoteImage\s[^>]*\bsrc=)"images\/([^"]+)"/g,
+    `$1"/images/posts/${slug}/images/$2"`
+  );
+
+  // NoteImage 组件：<NoteImage src='images/...' （单引号）
+  result = result.replace(
+    /(<NoteImage\s[^>]*\bsrc=)'images\/([^']+)'/g,
+    `$1'/images/posts/${slug}/images/$2'`
+  );
+
+  return result;
 }
 
 export function getPostBySlug(slug: string): Post | null {
@@ -118,7 +140,7 @@ export function getPostBySlug(slug: string): Post | null {
       return {
         slug,
         frontmatter,
-        content: rewriteImagePaths(content, slug),
+        content,
         readingTime: `${minutes} 分钟阅读`,
       };
     }

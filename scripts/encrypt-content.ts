@@ -12,6 +12,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import CryptoJS from "crypto-js";
+import { rewriteImagePaths } from "../src/lib/posts";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
@@ -113,8 +114,11 @@ async function main() {
     const slug = pathToSlug(relativePath);
     console.log(`  → 加密: ${slug}`);
 
+    // 重写图片路径（相对路径 → 网站绝对路径）
+    const rewrittenContent = rewriteImagePaths(content, slug);
+
     // 渲染 markdown 为 HTML
-    const html = await markdownToHtml(content);
+    const html = await markdownToHtml(rewrittenContent);
 
     // 加密
     const encrypted = encryptContent(html, frontmatter.password);

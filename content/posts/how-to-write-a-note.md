@@ -1,18 +1,19 @@
 ---
 title: "如何写一篇笔记"
 description: "从创建文件到部署上线的完整流程指南"
-date: "2026-07-04"
+date: "2026-07-05"
 category: "指南"
 tags: ["教程", "博客"]
 ---
 
 ## 整体流程
 
-写一篇笔记只需要 **3 步**：
+写一篇笔记只需要 **4 步**：
 
 1. 在 `content/posts/` 下创建 `.md` 文件
 2. 写好 frontmatter 和正文
-3. 运行 `./deploy.sh` 部署到服务器
+3. `npm run dev` 本地预览效果
+4. `./deploy.sh` 部署到服务器
 
 ---
 
@@ -145,60 +146,66 @@ $$
 
 ### 图片
 
-**第 1 步**：把图片放到 `public/images/` 目录下
+**第 1 步**：在笔记同级目录下创建 `images/` 文件夹，把图片放进去：
 
 ```text
-public/images/
-├── screenshot.png
-├── diagram.svg
-└── photo.jpg
+content/posts/CS50x/
+├── C-basics.md
+└── images/                  ← 图片文件夹（和 .md 文件同级）
+    ├── screenshot.png
+    └── diagram.svg
 ```
 
-**第 2 步**：在 Markdown 中引用（路径以 `/images/` 开头）
+**第 2 步**：在 Markdown 中用**相对路径**引用：
 
 ```markdown
-![图片描述](/images/screenshot.png)
+![图片描述](images/screenshot.png)
 ```
+
+> **为什么用相对路径？** 这样 VS Code 的 Markdown 预览能正常显示；网站渲染时会自动把它解析到当前文章对应的图片目录。
 
 #### 图片排版
 
-使用 `<NoteImage>` 组件控制对齐和大小：
+使用 `<NoteImage>` 组件控制对齐和大小。**路径也用相对路径**（和标准 Markdown 图片一样）：
 
 **居中**（默认）：
 
 ```jsx
-<NoteImage src="/images/photo.jpg" alt="描述" width="400" />
+<NoteImage src="images/photo.jpg" alt="描述" width="400" />
 ```
+
+> `<NoteImage>` 的图片路径和 `![]()` 一样用相对路径 `images/xxx.png`，渲染时会自动解析。
+> 纯 Markdown 预览器通常不会执行 `<NoteImage>` 这类组件；要看它的最终排版，需要用 `npm run dev` 在浏览器里预览。
 
 **居右**：
 
 ```jsx
-<NoteImage src="/images/photo.jpg" alt="描述" width="400" align="right" />
+<NoteImage src="images/photo.jpg" alt="描述" width="400" align="right" />
 ```
 
 **居左**：
 
 ```jsx
-<NoteImage src="/images/photo.jpg" alt="描述" width="400" align="left" />
+<NoteImage src="images/photo.jpg" alt="描述" width="400" align="left" />
 ```
 
 **百分比宽度**：
 
 ```jsx
-<NoteImage src="/images/photo.jpg" alt="描述" width="50%" />
+<NoteImage src="images/photo.jpg" alt="描述" width="50%" />
 ```
 
 **带说明文字**：
 
 ```jsx
-<NoteImage src="/images/photo.jpg" alt="描述" width="400" caption="这是说明文字" />
+<NoteImage src="images/photo.jpg" alt="描述" width="400" caption="这是说明文字" />
 ```
 
 ### 参数说明
 
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
-| `src` | 字符串 | 必填 | 图片路径，如 `/images/photo.jpg` |
+| `src` | 字符串 | 必填 | 图片路径，写相对路径如 `images/photo.jpg` |
 | `alt` | 字符串 | 空 | 图片描述 |
 | `width` | 字符串 | 无 | `"400"`（像素）或 `"50%"`（百分比），都用引号 |
 | `align` | 字符串 | `"center"` | `"center"` / `"left"` / `"right"` |
@@ -208,29 +215,35 @@ public/images/
 
 ---
 
-## 第 4 步：部署
+## 第 4 步：本地预览
 
-写完笔记后，一条命令部署：
+写完笔记后，先本地看看效果：
+
+```bash
+npm run dev
+# 浏览器打开 http://localhost:3000/notes/你的文件名
+```
+
+> ✅ 这个模式支持**热更新**：修改 `.md` 文件内容、替换图片后浏览器会自动刷新，无需手动刷新页面。
+
+---
+
+## 第 5 步：部署上线
+
+确认没问题后，一条命令部署：
 
 ```bash
 ./deploy.sh
 ```
 
 这个脚本会自动完成：
-1. `npm run build` — 构建静态站点
+1. 同步图片 → `npm run build` 构建静态站点
 2. 打包 `out/` 目录
 3. `scp` 上传到服务器（120.26.254.10）
 4. 在服务器上解压到 `/var/www/mhang-blog/`
 5. `nginx -s reload` 刷新
 
 部署完成后，访问 `http://120.26.254.10/notes/你的文件名` 即可看到新笔记。
-
-### 只在本地预览（不上线）
-
-```bash
-npm run build && npm run start
-# 然后浏览器打开 http://localhost:3000/notes/你的文件名
-```
 
 ---
 
@@ -277,7 +290,7 @@ draft: true
 部署前可以先本地预览：
 
 ```bash
-npm run build && npm run start
+npm run dev
 ```
 
 确认没问题再 `./deploy.sh`。

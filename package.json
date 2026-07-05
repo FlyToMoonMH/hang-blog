@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "prebuild": "npx tsx scripts/generate-rss.ts && npx tsx scripts/generate-search-index.ts && npx tsx scripts/encrypt-content.ts",
+    "dev": "node scripts/dev-setup.mjs && next dev",
+    "prebuild": "npx tsx scripts/generate-rss.ts && npx tsx scripts/generate-search-index.ts && npx tsx scripts/encrypt-content.ts && node scripts/build-setup.mjs",
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",

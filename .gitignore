@@ -45,6 +45,7 @@ next-env.d.ts
 /public/encrypted/
 /public/rss.xml
 /public/search-index.json
+/public/images/
 
 # workbuddy internal
 .workbuddy/

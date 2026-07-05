@@ -1,18 +1,29 @@
+import { resolvePostAssetSrc } from "@/lib/post-assets";
+
 interface NoteImageProps {
   src: string;
   alt?: string;
   width?: number | string;
   align?: "center" | "left" | "right";
   caption?: string;
+  postSlug?: string;
 }
 
-export function NoteImage({ src, alt = "", width, align = "center", caption }: NoteImageProps) {
+export function NoteImage({
+  src,
+  alt = "",
+  width,
+  align = "center",
+  caption,
+  postSlug,
+}: NoteImageProps) {
   const wrapperClass =
     align === "left"
       ? "note-img-left"
       : align === "right"
         ? "note-img-right"
         : "note-img-center";
+  const resolvedSrc = resolvePostAssetSrc(src, postSlug);
 
   const imgStyle: React.CSSProperties = {};
   if (width !== undefined && width !== null) {
@@ -27,7 +38,7 @@ export function NoteImage({ src, alt = "", width, align = "center", caption }: N
   return (
     <div className={wrapperClass}>
       <figure style={{ margin: 0, display: "inline-block" }}>
-        <img src={src} alt={alt} style={imgStyle} />
+        <img src={resolvedSrc} alt={alt} style={imgStyle} />
         {caption && <figcaption className="note-figcaption">{caption}</figcaption>}
       </figure>
     </div>
