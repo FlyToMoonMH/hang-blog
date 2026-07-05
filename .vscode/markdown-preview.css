@@ -191,67 +191,167 @@
 }
 
 /* ============================================================
- *  暗色主题（VS Code dark 主题自动生效）
+ *  暗色 + 高对比度主题
+ *  VS Code 预览的暗色类名挂在 body 上，必须用前置 body
  * ============================================================ */
 
-.vscode-dark .vscode-body {
+body.vscode-dark .vscode-body,
+body.vscode-high-contrast .vscode-body {
+  /* 正文 */
   color: #d1d5db;
+  background-color: transparent;
 }
 
-.vscode-dark .vscode-body h1,
-.vscode-dark .vscode-body h2,
-.vscode-dark .vscode-body h3,
-.vscode-dark .vscode-body h4,
-.vscode-dark .vscode-body h5,
-.vscode-dark .vscode-body h6 {
+body.vscode-dark .vscode-body h1,
+body.vscode-dark .vscode-body h2,
+body.vscode-dark .vscode-body h3,
+body.vscode-dark .vscode-body h4,
+body.vscode-dark .vscode-body h5,
+body.vscode-dark .vscode-body h6,
+body.vscode-high-contrast .vscode-body h1,
+body.vscode-high-contrast .vscode-body h2,
+body.vscode-high-contrast .vscode-body h3,
+body.vscode-high-contrast .vscode-body h4,
+body.vscode-high-contrast .vscode-body h5,
+body.vscode-high-contrast .vscode-body h6 {
   color: #f3f4f6;
 }
 
-.vscode-dark .vscode-body h1 {
+body.vscode-dark .vscode-body h1,
+body.vscode-high-contrast .vscode-body h1 {
   border-bottom-color: #374151;
 }
 
-.vscode-dark .vscode-body h2 {
+body.vscode-dark .vscode-body h2,
+body.vscode-high-contrast .vscode-body h2 {
   border-bottom-color: #1f2937;
 }
 
-.vscode-dark .vscode-body a {
+body.vscode-dark .vscode-body a,
+body.vscode-high-contrast .vscode-body a {
   color: #60a5fa;
 }
 
-.vscode-dark .vscode-body :not(pre) > code {
-  background-color: rgba(255, 255, 255, 0.1);
+body.vscode-dark .vscode-body :not(pre) > code,
+body.vscode-high-contrast .vscode-body :not(pre) > code {
+  background-color: rgba(255, 255, 255, 0.12);
   color: #f3f4f6;
 }
 
-.vscode-dark .vscode-body pre {
+body.vscode-dark .vscode-body pre,
+body.vscode-high-contrast .vscode-body pre {
   background-color: #1a1b26 !important;
 }
 
-.vscode-dark .vscode-body pre code {
+body.vscode-dark .vscode-body pre code,
+body.vscode-high-contrast .vscode-body pre code {
   color: #c0caf5;
 }
 
-.vscode-dark .vscode-body blockquote {
+body.vscode-dark .vscode-body blockquote,
+body.vscode-high-contrast .vscode-body blockquote {
   border-left-color: #4b5563;
   color: #9ca3af;
-  background-color: rgba(255, 255, 255, 0.03);
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
-.vscode-dark .vscode-body th,
-.vscode-dark .vscode-body td {
+body.vscode-dark .vscode-body th,
+body.vscode-dark .vscode-body td,
+body.vscode-high-contrast .vscode-body th,
+body.vscode-high-contrast .vscode-body td {
   border-color: #374151;
 }
 
-.vscode-dark .vscode-body th {
+body.vscode-dark .vscode-body th,
+body.vscode-high-contrast .vscode-body th {
   background-color: #1f2937;
   color: #f3f4f6;
 }
 
-.vscode-dark .vscode-body tr:nth-child(even) {
+body.vscode-dark .vscode-body tr:nth-child(even),
+body.vscode-high-contrast .vscode-body tr:nth-child(even) {
   background-color: rgba(255, 255, 255, 0.03);
 }
 
-.vscode-dark .vscode-body hr {
+body.vscode-dark .vscode-body hr,
+body.vscode-high-contrast .vscode-body hr {
+  border-top-color: #374151;
+}
+
+body.vscode-dark .vscode-body strong,
+body.vscode-dark .vscode-body b,
+body.vscode-high-contrast .vscode-body strong,
+body.vscode-high-contrast .vscode-body b {
+  color: #f9fafb;
+}
+
+/* 兼容：部分 VS Code 版本 class 挂在 <html> 上 */
+html.vscode-dark .vscode-body,
+html.vscode-high-contrast .vscode-body {
+  color: #d1d5db;
+  background-color: transparent;
+}
+html.vscode-dark .vscode-body h1,
+html.vscode-dark .vscode-body h2,
+html.vscode-dark .vscode-body h3,
+html.vscode-dark .vscode-body h4,
+html.vscode-dark .vscode-body h5,
+html.vscode-dark .vscode-body h6,
+html.vscode-high-contrast .vscode-body h1,
+html.vscode-high-contrast .vscode-body h2,
+html.vscode-high-contrast .vscode-body h3,
+html.vscode-high-contrast .vscode-body h4,
+html.vscode-high-contrast .vscode-body h5,
+html.vscode-high-contrast .vscode-body h6 {
+  color: #f3f4f6;
+}
+html.vscode-dark .vscode-body h1,
+html.vscode-high-contrast .vscode-body h1 {
+  border-bottom-color: #374151;
+}
+html.vscode-dark .vscode-body h2,
+html.vscode-high-contrast .vscode-body h2 {
+  border-bottom-color: #1f2937;
+}
+html.vscode-dark .vscode-body a,
+html.vscode-high-contrast .vscode-body a {
+  color: #60a5fa;
+}
+html.vscode-dark .vscode-body :not(pre) > code,
+html.vscode-high-contrast .vscode-body :not(pre) > code {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #f3f4f6;
+}
+html.vscode-dark .vscode-body pre,
+html.vscode-high-contrast .vscode-body pre {
+  background-color: #1a1b26 !important;
+}
+html.vscode-dark .vscode-body pre code,
+html.vscode-high-contrast .vscode-body pre code {
+  color: #c0caf5;
+}
+html.vscode-dark .vscode-body blockquote,
+html.vscode-high-contrast .vscode-body blockquote {
+  border-left-color: #4b5563;
+  color: #9ca3af;
+  background-color: rgba(255, 255, 255, 0.04);
+}
+html.vscode-dark .vscode-body th,
+html.vscode-dark .vscode-body td,
+html.vscode-high-contrast .vscode-body th,
+html.vscode-high-contrast .vscode-body td {
+  border-color: #374151;
+}
+html.vscode-dark .vscode-body th,
+html.vscode-high-contrast .vscode-body th {
+  background-color: #1f2937;
+  color: #f3f4f6;
+}
+html.vscode-dark .vscode-body tr:nth-child(even),
+html.vscode-high-contrast .vscode-body tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+html.vscode-dark .vscode-body hr,
+html.vscode-high-contrast .vscode-body hr {
   border-top-color: #374151;
 }
