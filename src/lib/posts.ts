@@ -75,7 +75,7 @@ export function getAllPosts(): Post[] {
       return {
         slug,
         frontmatter,
-        content,
+        content: rewriteImagePaths(content, slug),
         readingTime: `${minutes} 分钟阅读`,
       } as Post;
     })
@@ -88,6 +88,18 @@ export function getAllPosts(): Post[] {
   );
 
   return posts;
+}
+
+/**
+ * 将 MDX 中的相对图片路径重写为构建后的绝对路径
+ * images/xxx.png → /images/posts/{slug}/xxx.png
+ * 这样 VS Code 预览用相对路径，网站用绝对路径，两边都能正常显示
+ */
+function rewriteImagePaths(content: string, slug: string): string {
+  return content.replace(
+    /\]\(images\/([^)]+)\)/g,
+    `](/images/posts/${slug}/$1)`
+  );
 }
 
 export function getPostBySlug(slug: string): Post | null {
@@ -106,7 +118,7 @@ export function getPostBySlug(slug: string): Post | null {
       return {
         slug,
         frontmatter,
-        content,
+        content: rewriteImagePaths(content, slug),
         readingTime: `${minutes} 分钟阅读`,
       };
     }

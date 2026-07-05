@@ -95,6 +95,7 @@ int main(void){
 我感觉递归最重要的就是不要陷入死循环，设置合理的终止循环的条件。
 
 比如归并排序
+
 ```c
 #include <stdio.h>
 //采用了分而治之的方法
@@ -106,4 +107,40 @@ int main(){
 }
 ```
 
-![printf 指针输出示例](/images/posts/C-basics/printf-pointer.png)
+## 存储
+
+十六进制：用两位来表示##，比如1F，就表示16*1+15=31；FF是255；
+通常我们会一次使用8个bit，1 Byte来表示值。
+通常会在任何十六进制的数字前面加前缀"0x"；
+
+```c
+#include <stdio.h>
+int main(void){
+    int n = 5;
+    printf("%d\n",n);
+    printf("%p\n",&n); //输出地址
+    return 0;
+}
+---输出---
+5
+0x7fffd3c34ecc
+```
+指针 pointer：一种变量，可以存储地址
+```c
+int n = 50;
+int *p = &n; //int *代表的是p 存的是一个整数的地址，而不是一个整数
+printf("%p\n",p); //输出0x7ffd9dc64d5c
+printf("%d\n",*p);//前往p这个地址，看看里面存储了啥
+```
+存储地址的变量一般会占用8个字节，也就是64位。
+目前的计算机都是64位的，因为用32位的计算机的话，大约是40亿的寻址范围，对应4GB，意味着计算机无法支持8GB、16GB 的内存。
+
+对于程序员来说，了解底层原理是非常有益的。
+
+在 C 语言里面，是不存在 string 这样一种变量的，本质上就是一个字符数组。
+```c
+string s;
+
+```
+
+![printf 指针输出示例](images/printf-pointer.png)

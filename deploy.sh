@@ -23,6 +23,7 @@ cd "$TEMP_DIR"
 npx tsx scripts/generate-rss.ts
 npx tsx scripts/generate-search-index.ts
 npx tsx scripts/encrypt-content.ts
+npx tsx scripts/sync-images.ts
 
 # 3. 构建
 echo "  → 构建静态文件..."
