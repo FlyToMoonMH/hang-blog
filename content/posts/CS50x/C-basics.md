@@ -105,3 +105,5 @@ int main(){
     return 0;
 }
 ```
+
+![printf 指针输出示例](/images/posts/C-basics/printf-pointer.png)
