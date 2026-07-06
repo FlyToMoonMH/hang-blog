@@ -21,7 +21,7 @@ fi
 SERVER_IP="120.26.254.10"
 SERVER_USER="root"
 REMOTE_DIR="/var/www/mhang-blog"
-PROJECT_DIR="/Users/mh/Downloads/博客"
+PROJECT_DIR="$SCRIPT_DIR"
 TEMP_DIR="/tmp/hang-blog"
 
 # 检查必要变量
