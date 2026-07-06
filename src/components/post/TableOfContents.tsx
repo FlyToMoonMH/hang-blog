@@ -37,11 +37,11 @@ export function TableOfContents({ items }: { items: TocItem[] }) {
   if (items.length === 0) return null;
 
   return (
-    <nav className="hidden xl:block">
+    <nav className="hidden h-full overflow-y-auto pr-2 xl:block">
       <h3 className="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100">
         目录
       </h3>
-      <ul className="space-y-2 border-l border-gray-200 dark:border-gray-800">
+      <ul className="space-y-2 border-l border-gray-200 pb-6 dark:border-gray-800">
         {items.map((item) => (
           <li key={item.slug}>
             <a

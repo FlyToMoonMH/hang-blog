@@ -10,8 +10,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const tags = getAllTags();
 
   const postUrls = posts.map((post) => ({
-    url: `${siteConfig.url}/notes/${post.slug}`,
-    lastModified: new Date(post.frontmatter.date),
+    url: `${siteConfig.url}${post.route}`,
+    lastModified: new Date(post.frontmatter.updated ?? post.frontmatter.date),
     changeFrequency: "monthly" as const,
     priority: 0.8,
   }));

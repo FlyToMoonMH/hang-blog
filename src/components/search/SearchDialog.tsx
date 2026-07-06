@@ -4,13 +4,44 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import type { SearchIndexEntry } from "@/types";
 
-interface SearchResult {
-  slug: string;
-  title: string;
-  description: string;
-  category: string;
-  tags: string[];
-  date: string;
+interface SearchResult extends SearchIndexEntry {
+  score: number;
+}
+
+function scoreEntry(entry: SearchIndexEntry, query: string): number {
+  const tokens = query
+    .toLowerCase()
+    .split(/\s+/)
+    .map((token) => token.trim())
+    .filter(Boolean);
+
+  if (tokens.length === 0) return 0;
+
+  const title = entry.title.toLowerCase();
+  const navTitle = entry.navTitle.toLowerCase();
+  const description = entry.description.toLowerCase();
+  const summary = entry.summary.toLowerCase();
+  const section = entry.section.toLowerCase();
+  const subsection = entry.subsection?.toLowerCase() ?? "";
+  const content = entry.content.toLowerCase();
+  const tags = entry.tags.map((tag) => tag.toLowerCase());
+
+  let score = 0;
+
+  for (const token of tokens) {
+    if (title === token || navTitle === token) score += 140;
+    if (title.startsWith(token) || navTitle.startsWith(token)) score += 90;
+    if (title.includes(token) || navTitle.includes(token)) score += 70;
+    if (tags.some((tag) => tag === token)) score += 50;
+    if (tags.some((tag) => tag.includes(token))) score += 36;
+    if (section.includes(token)) score += 24;
+    if (subsection.includes(token)) score += 20;
+    if (summary.includes(token)) score += 18;
+    if (description.includes(token)) score += 12;
+    if (content.includes(token)) score += 6;
+  }
+
+  return score;
 }
 
 export function SearchDialog() {
@@ -21,7 +52,6 @@ export function SearchDialog() {
   const [indexData, setIndexData] = useState<SearchIndexEntry[] | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Load search index on first open
   useEffect(() => {
     if (!indexData && isOpen) {
       fetch("/search-index.json")
@@ -31,14 +61,12 @@ export function SearchDialog() {
     }
   }, [isOpen, indexData]);
 
-  // Listen for open event
   useEffect(() => {
     const handler = () => setIsOpen(true);
     window.addEventListener("open-search", handler);
 
-    // Keyboard shortcut
     const keyHandler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         setIsOpen(true);
       }
@@ -46,6 +74,7 @@ export function SearchDialog() {
         setIsOpen(false);
       }
     };
+
     window.addEventListener("keydown", keyHandler);
 
     return () => {
@@ -54,7 +83,6 @@ export function SearchDialog() {
     };
   }, []);
 
-  // Focus input on open
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 50);
@@ -65,34 +93,24 @@ export function SearchDialog() {
     }
   }, [isOpen]);
 
-  // Search function
   const doSearch = useCallback(
-    (q: string) => {
-      if (!q.trim() || !indexData) {
+    (value: string) => {
+      if (!value.trim() || !indexData) {
         setResults([]);
         return;
       }
 
-      const lower = q.toLowerCase();
       const matched = indexData
-        .filter((entry) => {
-          return (
-            entry.title.toLowerCase().includes(lower) ||
-            entry.description.toLowerCase().includes(lower) ||
-            entry.category.toLowerCase().includes(lower) ||
-            entry.tags.some((t) => t.toLowerCase().includes(lower)) ||
-            entry.content.toLowerCase().includes(lower)
-          );
-        })
-        .slice(0, 20)
         .map((entry) => ({
-          slug: entry.slug,
-          title: entry.title,
-          description: entry.description,
-          category: entry.category,
-          tags: entry.tags,
-          date: entry.date,
-        }));
+          ...entry,
+          score: scoreEntry(entry, value),
+        }))
+        .filter((entry) => entry.score > 0)
+        .sort((a, b) => {
+          if (b.score !== a.score) return b.score - a.score;
+          return new Date(b.updated).getTime() - new Date(a.updated).getTime();
+        })
+        .slice(0, 20);
 
       setResults(matched);
       setSelectedIndex(0);
@@ -100,23 +118,21 @@ export function SearchDialog() {
     [indexData]
   );
 
-  // Debounce search
   useEffect(() => {
-    const timer = setTimeout(() => doSearch(query), 150);
+    const timer = setTimeout(() => doSearch(query), 120);
     return () => clearTimeout(timer);
   }, [query, doSearch]);
 
-  // Keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setSelectedIndex((i) => Math.min(i + 1, results.length - 1));
+      setSelectedIndex((index) => Math.min(index + 1, results.length - 1));
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      setSelectedIndex((i) => Math.max(i - 1, 0));
+      setSelectedIndex((index) => Math.max(index - 1, 0));
     } else if (e.key === "Enter" && results[selectedIndex]) {
       e.preventDefault();
-      window.location.href = `/notes/${results[selectedIndex].slug}`;
+      window.location.href = results[selectedIndex].route;
     }
   };
 
@@ -131,7 +147,6 @@ export function SearchDialog() {
         className="mt-[10vh] w-full max-w-2xl overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl dark:border-gray-800 dark:bg-gray-900"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Search input */}
         <div className="flex items-center border-b border-gray-200 dark:border-gray-800">
           <svg
             className="ml-4 h-5 w-5 shrink-0 text-gray-400"
@@ -149,7 +164,7 @@ export function SearchDialog() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="搜索文章..."
+            placeholder="搜索笔记、主题、标签..."
             className="w-full bg-transparent px-3 py-4 text-base text-gray-900 outline-none placeholder:text-gray-400 dark:text-gray-100"
           />
           <button
@@ -160,38 +175,53 @@ export function SearchDialog() {
           </button>
         </div>
 
-        {/* Results */}
         <div className="max-h-[50vh] overflow-y-auto p-2">
           {query.trim() === "" ? (
-            <p className="py-8 text-center text-sm text-gray-400">
-              输入关键词搜索文章
-            </p>
+            <div className="py-8 text-center text-sm text-gray-400">
+              <p>输入标题、主题、标签或正文关键词</p>
+              <p className="mt-2 text-xs text-gray-400">
+                加密笔记只会公开标题、摘要与结构信息，不会公开全文索引。
+              </p>
+            </div>
           ) : results.length === 0 ? (
             <p className="py-8 text-center text-sm text-gray-400">
-              没有找到相关文章
+              没有找到相关笔记
             </p>
           ) : (
-            results.map((result, i) => (
+            results.map((result, index) => (
               <Link
                 key={result.slug}
-                href={`/notes/${result.slug}`}
+                href={result.route}
                 onClick={() => setIsOpen(false)}
-                className={`block rounded-lg px-3 py-2.5 transition-colors ${
-                  i === selectedIndex
+                className={`block rounded-lg px-3 py-3 transition-colors ${
+                  index === selectedIndex
                     ? "bg-blue-50 dark:bg-blue-900/30"
                     : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {result.title}
-                  </h3>
-                  <span className="ml-2 shrink-0 text-xs text-gray-400">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {result.navTitle}
+                      </h3>
+                      {result.access === "protected" && (
+                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                          加密
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-1 line-clamp-1 text-xs text-gray-500 dark:text-gray-400">
+                      {result.section}
+                      {result.subsection ? ` / ${result.subsection}` : ""}
+                    </p>
+                  </div>
+                  <span className="shrink-0 text-xs text-gray-400">
                     {result.category}
                   </span>
                 </div>
-                <p className="mt-0.5 line-clamp-1 text-xs text-gray-500 dark:text-gray-400">
-                  {result.description}
+                <p className="mt-1 line-clamp-2 text-xs leading-5 text-gray-500 dark:text-gray-400">
+                  {result.summary || result.description}
                 </p>
               </Link>
             ))

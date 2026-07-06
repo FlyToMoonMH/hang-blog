@@ -1,8 +1,14 @@
 ---
 title: "深入理解 Next.js App Router"
 description: "从零开始理解 Next.js App Router 的路由系统、服务端组件和布局模式"
+summary: "把 App Router 里的布局、路由段和服务端组件先搭一个完整心智模型。"
 date: "2026-07-02"
+updated: "2026-07-06"
 category: "Next.js"
+section: "Next.js"
+nav_title: "App Router"
+order: 10
+featured: true
 tags: ["nextjs", "react", "app-router", "ssr"]
 ---
 

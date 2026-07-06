@@ -6,7 +6,7 @@ interface NoteImageProps {
   width?: number | string;
   align?: "center" | "left" | "right";
   caption?: string;
-  postSlug?: string;
+  postAssetBasePath?: string;
 }
 
 export function NoteImage({
@@ -15,7 +15,7 @@ export function NoteImage({
   width,
   align = "center",
   caption,
-  postSlug,
+  postAssetBasePath,
 }: NoteImageProps) {
   const wrapperClass =
     align === "left"
@@ -23,7 +23,7 @@ export function NoteImage({
       : align === "right"
         ? "note-img-right"
         : "note-img-center";
-  const resolvedSrc = resolvePostAssetSrc(src, postSlug);
+  const resolvedSrc = resolvePostAssetSrc(src, postAssetBasePath);
 
   const imgStyle: React.CSSProperties = {};
   if (width !== undefined && width !== null) {

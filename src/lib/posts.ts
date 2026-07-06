@@ -3,30 +3,311 @@ import path from "path";
 import matter from "gray-matter";
 import readingTime from "reading-time";
 import GithubSlugger from "github-slugger";
-import type { Post, Frontmatter, CategoryInfo, TagInfo, SidebarItem, SearchIndexEntry } from "@/types";
+import type {
+  BreadcrumbItem,
+  CategoryInfo,
+  Frontmatter,
+  NoteManifestEntry,
+  NoteSectionSummary,
+  Post,
+  SearchIndexEntry,
+  SectionManifestEntry,
+  SidebarItem,
+  SubsectionManifestEntry,
+  TagInfo,
+} from "@/types";
 
 const POSTS_DIR = path.join(process.cwd(), "content", "posts");
+
+type MarkdownFile = {
+  filePath: string;
+  relativePath: string;
+};
+
+type RawFrontmatter = Partial<Frontmatter> & Record<string, unknown>;
+
+type RouteInfo = {
+  sectionName: string;
+  sectionSlug: string;
+  subsectionName?: string;
+  subsectionSlug?: string;
+  slugSegment: string;
+  routeSegments: string[];
+  routePath: string;
+  route: string;
+  assetBasePath: string;
+  encryptedPath: string;
+};
 
 function slugify(str: string): string {
   const slugger = new GithubSlugger();
   return slugger.slug(str);
 }
 
+function toOptionalString(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim() ? value.trim() : undefined;
+}
+
+function toOptionalNumber(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+
+function toOptionalBoolean(value: unknown): boolean | undefined {
+  return typeof value === "boolean" ? value : undefined;
+}
+
+function toStringArray(value: unknown): string[] {
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string" && item.trim() !== "")
+    : [];
+}
+
+function getDirectoryParts(relativePath: string): string[] {
+  const dir = path.dirname(relativePath);
+  return dir === "." ? [] : dir.split(path.sep);
+}
+
+function pathToSlug(relativePath: string): string {
+  const fileName = path.basename(relativePath);
+  return fileName.replace(/\.(md|mdx)$/, "");
+}
+
+function parseDate(value: string): number {
+  return new Date(value).getTime();
+}
+
+function compareByOrderAndTitle(
+  a: { order?: number; title: string },
+  b: { order?: number; title: string }
+): number {
+  const aOrder = a.order ?? Number.MAX_SAFE_INTEGER;
+  const bOrder = b.order ?? Number.MAX_SAFE_INTEGER;
+
+  if (aOrder !== bOrder) {
+    return aOrder - bOrder;
+  }
+
+  return a.title.localeCompare(b.title, "zh-CN");
+}
+
+function normalizeFrontmatter(
+  data: RawFrontmatter,
+  relativePath: string,
+  slug: string
+): Frontmatter {
+  const dirParts = getDirectoryParts(relativePath);
+  const title = toOptionalString(data.title) ?? slug;
+  const section =
+    toOptionalString(data.section) ??
+    dirParts[0] ??
+    toOptionalString(data.category) ??
+    "未分类";
+  const subsection =
+    toOptionalString(data.subsection) ?? (dirParts.length > 1 ? dirParts[1] : undefined);
+  const description =
+    toOptionalString(data.description) ??
+    toOptionalString(data.summary) ??
+    `${title} 的笔记`;
+  const date = toOptionalString(data.date) ?? new Date().toISOString().slice(0, 10);
+  const updated = toOptionalString(data.updated) ?? date;
+  const tags = toStringArray(data.tags);
+  const access =
+    toOptionalString(data.access) === "protected" || toOptionalString(data.password)
+      ? "protected"
+      : "public";
+  const category = toOptionalString(data.category) ?? section;
+
+  return {
+    title,
+    nav_title: toOptionalString(data.nav_title) ?? title,
+    description,
+    summary: toOptionalString(data.summary) ?? description,
+    date,
+    updated,
+    category,
+    section,
+    subsection,
+    order: toOptionalNumber(data.order),
+    kind: toOptionalString(data.kind) === "post" ? "post" : "note",
+    status:
+      toOptionalString(data.status) === "draft" ||
+      toOptionalString(data.status) === "growing"
+        ? (toOptionalString(data.status) as "draft" | "growing")
+        : "evergreen",
+    access,
+    featured: toOptionalBoolean(data.featured) ?? false,
+    tags,
+    toc: toOptionalBoolean(data.toc) ?? true,
+    toc_max_depth: toOptionalNumber(data.toc_max_depth) ?? 3,
+    draft: toOptionalBoolean(data.draft) ?? false,
+    password: toOptionalString(data.password),
+  };
+}
+
+function buildRouteInfo(frontmatter: Frontmatter, slug: string): RouteInfo {
+  const sectionName = frontmatter.section ?? frontmatter.category;
+  const sectionSlug = slugify(sectionName);
+  const subsectionName = frontmatter.subsection;
+  const subsectionSlug = subsectionName ? slugify(subsectionName) : undefined;
+  const slugSegment = slugify(slug);
+  const routeSegments = [sectionSlug, ...(subsectionSlug ? [subsectionSlug] : []), slugSegment];
+  const routePath = routeSegments.join("/");
+
+  return {
+    sectionName,
+    sectionSlug,
+    subsectionName,
+    subsectionSlug,
+    slugSegment,
+    routeSegments,
+    routePath,
+    route: `/notes/${routePath}`,
+    assetBasePath: `/images/posts/${routePath}`,
+    encryptedPath: `/encrypted/${routePath}.json`,
+  };
+}
+
+function prepareReadingTime(content: string): string {
+  const stats = readingTime(content);
+  const minutes = Math.max(1, Math.ceil(stats.minutes));
+  return `${minutes} 分钟阅读`;
+}
+
+function buildPostFromFile({ filePath, relativePath }: MarkdownFile): Post | null {
+  const raw = fs.readFileSync(filePath, "utf-8");
+  const { data, content } = matter(raw);
+  const slug = pathToSlug(relativePath);
+  const frontmatter = normalizeFrontmatter(data as RawFrontmatter, relativePath, slug);
+
+  if (frontmatter.draft) return null;
+
+  const routeInfo = buildRouteInfo(frontmatter, slug);
+
+  return {
+    slug,
+    route: routeInfo.route,
+    routePath: routeInfo.routePath,
+    routeSegments: routeInfo.routeSegments,
+    assetBasePath: routeInfo.assetBasePath,
+    encryptedPath: routeInfo.encryptedPath,
+    sourcePath: relativePath,
+    frontmatter,
+    content: preparePostContent(content, routeInfo.routePath),
+    readingTime: prepareReadingTime(content),
+  };
+}
+
+function collectPosts(): Post[] {
+  return findMarkdownFiles(POSTS_DIR, POSTS_DIR)
+    .map(buildPostFromFile)
+    .filter((post): post is Post => post !== null);
+}
+
+function validateNaturalHierarchy(manifest: NoteManifestEntry[]) {
+  const noteRoutes = new Map<string, NoteManifestEntry>();
+  const sectionSlugToName = new Map<string, string>();
+  const subsectionSlugToName = new Map<string, string>();
+
+  for (const note of manifest) {
+    const existingNote = noteRoutes.get(note.routePath);
+    if (existingNote) {
+      throw new Error(
+        `笔记路由冲突: "${existingNote.sourcePath}" 和 "${note.sourcePath}" 同时映射到 /notes/${note.routePath}`
+      );
+    }
+    noteRoutes.set(note.routePath, note);
+
+    const existingSectionName = sectionSlugToName.get(note.sectionSlug);
+    if (existingSectionName && existingSectionName !== note.section) {
+      throw new Error(
+        `Section slug 冲突: "${existingSectionName}" 与 "${note.section}" 都映射到 "${note.sectionSlug}"`
+      );
+    }
+    sectionSlugToName.set(note.sectionSlug, note.section);
+
+    if (note.subsectionSlug) {
+      const subsectionKey = `${note.sectionSlug}/${note.subsectionSlug}`;
+      const existingSubsectionName = subsectionSlugToName.get(subsectionKey);
+      if (existingSubsectionName && existingSubsectionName !== note.subsection) {
+        throw new Error(
+          `Subsection slug 冲突: "${existingSubsectionName}" 与 "${note.subsection}" 都映射到 "${subsectionKey}"`
+        );
+      }
+      subsectionSlugToName.set(subsectionKey, note.subsection ?? "");
+    }
+  }
+
+  const reservedRoutes = new Map<string, string>();
+
+  for (const note of manifest) {
+    if (!reservedRoutes.has(note.sectionSlug)) {
+      reservedRoutes.set(note.sectionSlug, `section "${note.section}"`);
+    }
+
+    if (note.subsectionSlug) {
+      const subsectionRoute = `${note.sectionSlug}/${note.subsectionSlug}`;
+      if (!reservedRoutes.has(subsectionRoute)) {
+        reservedRoutes.set(
+          subsectionRoute,
+          `subsection "${note.section} / ${note.subsection}"`
+        );
+      }
+    }
+  }
+
+  for (const [routePath, source] of reservedRoutes) {
+    const conflictingNote = noteRoutes.get(routePath);
+    if (conflictingNote) {
+      throw new Error(
+        `保留分区路由冲突: ${source} 占用了 /notes/${routePath}，但笔记 "${conflictingNote.sourcePath}" 也映射到了这个地址`
+      );
+    }
+  }
+}
+
+function buildNotesManifest(posts: Post[]): NoteManifestEntry[] {
+  const manifest = posts.map((post) => {
+    const routeInfo = buildRouteInfo(post.frontmatter, post.slug);
+
+    return {
+      slug: post.slug,
+      route: post.route,
+      routePath: post.routePath,
+      routeSegments: post.routeSegments,
+      sourcePath: post.sourcePath,
+      sectionSlug: routeInfo.sectionSlug,
+      subsectionSlug: routeInfo.subsectionSlug,
+      title: post.frontmatter.title,
+      navTitle: post.frontmatter.nav_title ?? post.frontmatter.title,
+      description: post.frontmatter.description,
+      summary: post.frontmatter.summary ?? post.frontmatter.description,
+      date: post.frontmatter.date,
+      updated: post.frontmatter.updated ?? post.frontmatter.date,
+      section: routeInfo.sectionName,
+      subsection: routeInfo.subsectionName,
+      category: post.frontmatter.category,
+      tags: post.frontmatter.tags,
+      access: post.frontmatter.access ?? "public",
+      order: post.frontmatter.order,
+      featured: post.frontmatter.featured ?? false,
+    };
+  });
+
+  validateNaturalHierarchy(manifest);
+  return manifest;
+}
+
 /**
  * 递归扫描目录，找出所有 .md 和 .mdx 文件
  * 以 _ 或 . 开头的文件/文件夹会被跳过（如 _template.md、_drafts/、.obsidian/）
  */
-function findMarkdownFiles(
-  dir: string,
-  baseDir: string
-): { filePath: string; relativePath: string }[] {
-  const results: { filePath: string; relativePath: string }[] = [];
+function findMarkdownFiles(dir: string, baseDir: string): MarkdownFile[] {
+  const results: MarkdownFile[] = [];
   if (!fs.existsSync(dir)) return results;
 
   const entries = fs.readdirSync(dir, { withFileTypes: true });
 
   for (const entry of entries) {
-    // 跳过以 _ 或 . 开头的文件/文件夹
     if (entry.name.startsWith("_") || entry.name.startsWith(".")) continue;
 
     const fullPath = path.join(dir, entry.name);
@@ -45,49 +326,263 @@ function findMarkdownFiles(
   return results;
 }
 
-/**
- * 从文件相对路径提取 slug（只用文件名，不含文件夹路径）
- * 例: "笔记/daily.md"    → "daily"
- *     "前端/react.mdx"   → "react"
- *     "welcome.mdx"      → "welcome"
- * 文件夹仅用于本地整理，不出现在 URL 中
- */
-function pathToSlug(relativePath: string): string {
-  const fileName = path.basename(relativePath);
-  return fileName.replace(/\.(md|mdx)$/, "");
+function buildSectionEntries(manifest: NoteManifestEntry[]): SectionManifestEntry[] {
+  const sections = new Map<string, SectionManifestEntry>();
+
+  for (const note of manifest) {
+    let section = sections.get(note.sectionSlug);
+    if (!section) {
+      section = {
+        name: note.section,
+        slug: note.sectionSlug,
+        route: `/notes/${note.sectionSlug}`,
+        description: `围绕 ${note.section} 主题整理的笔记与长期知识库。`,
+        count: 0,
+        updated: note.updated,
+        posts: [],
+        directPosts: [],
+        subsections: [],
+        featuredPosts: [],
+      };
+      sections.set(note.sectionSlug, section);
+    }
+
+    section.posts.push(note);
+    section.count += 1;
+    if (parseDate(note.updated) > parseDate(section.updated)) {
+      section.updated = note.updated;
+    }
+    if (note.featured && note.access === "public") {
+      section.featuredPosts.push(note);
+    }
+
+    if (!note.subsectionSlug || !note.subsection) {
+      section.directPosts.push(note);
+      continue;
+    }
+
+    let subsection = section.subsections.find((item) => item.slug === note.subsectionSlug);
+    if (!subsection) {
+      subsection = {
+        name: note.subsection,
+        slug: note.subsectionSlug,
+        route: `/notes/${note.sectionSlug}/${note.subsectionSlug}`,
+        description: `围绕 ${note.section} / ${note.subsection} 整理的专题笔记。`,
+        count: 0,
+        updated: note.updated,
+        sectionName: note.section,
+        sectionSlug: note.sectionSlug,
+        posts: [],
+      };
+      section.subsections.push(subsection);
+    }
+
+    subsection.posts.push(note);
+    subsection.count += 1;
+    if (parseDate(note.updated) > parseDate(subsection.updated)) {
+      subsection.updated = note.updated;
+    }
+  }
+
+  return Array.from(sections.values())
+    .map((section) => ({
+      ...section,
+      posts: [...section.posts].sort((a, b) =>
+        compareByOrderAndTitle(
+          { order: a.order, title: a.navTitle },
+          { order: b.order, title: b.navTitle }
+        )
+      ),
+      directPosts: [...section.directPosts].sort((a, b) =>
+        compareByOrderAndTitle(
+          { order: a.order, title: a.navTitle },
+          { order: b.order, title: b.navTitle }
+        )
+      ),
+      subsections: [...section.subsections]
+        .map((subsection) => ({
+          ...subsection,
+          posts: [...subsection.posts].sort((a, b) =>
+            compareByOrderAndTitle(
+              { order: a.order, title: a.navTitle },
+              { order: b.order, title: b.navTitle }
+            )
+          ),
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name, "zh-CN")),
+      featuredPosts: [...section.featuredPosts].sort((a, b) =>
+        parseDate(b.updated) - parseDate(a.updated)
+      ),
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
 }
 
 export function getAllPosts(): Post[] {
-  const files = findMarkdownFiles(POSTS_DIR, POSTS_DIR);
+  return collectPosts().sort(
+    (a, b) => parseDate(b.frontmatter.date) - parseDate(a.frontmatter.date)
+  );
+}
 
-  const posts = files
-    .map(({ filePath, relativePath }) => {
-      const raw = fs.readFileSync(filePath, "utf-8");
-      const { data, content } = matter(raw);
-      const frontmatter = data as Frontmatter;
+export function getAllNotes(): Post[] {
+  return collectPosts()
+    .filter((post) => post.frontmatter.kind !== "post")
+    .sort((a, b) => {
+      const sectionCompare = (a.frontmatter.section ?? "").localeCompare(
+        b.frontmatter.section ?? "",
+        "zh-CN"
+      );
 
-      if (frontmatter.draft) return null;
+      if (sectionCompare !== 0) return sectionCompare;
 
-      const slug = pathToSlug(relativePath);
-      const stats = readingTime(content);
-      const minutes = Math.max(1, Math.ceil(stats.minutes));
+      const subsectionCompare = (a.frontmatter.subsection ?? "").localeCompare(
+        b.frontmatter.subsection ?? "",
+        "zh-CN"
+      );
 
-      return {
-        slug,
-        frontmatter,
-        content: preparePostContent(content, slug),
-        readingTime: `${minutes} 分钟阅读`,
-      } as Post;
-    })
-    .filter((p): p is Post => p !== null);
+      if (subsectionCompare !== 0) return subsectionCompare;
 
-  posts.sort(
-    (a, b) =>
-      new Date(b.frontmatter.date).getTime() -
-      new Date(a.frontmatter.date).getTime()
+      return compareByOrderAndTitle(
+        {
+          order: a.frontmatter.order,
+          title: a.frontmatter.nav_title ?? a.frontmatter.title,
+        },
+        {
+          order: b.frontmatter.order,
+          title: b.frontmatter.nav_title ?? b.frontmatter.title,
+        }
+      );
+    });
+}
+
+export function getNotesManifest(): NoteManifestEntry[] {
+  return buildNotesManifest(getAllNotes());
+}
+
+export function getSectionManifestEntries(): SectionManifestEntry[] {
+  return buildSectionEntries(getNotesManifest());
+}
+
+export function getNoteSectionSummaries(): NoteSectionSummary[] {
+  return getSectionManifestEntries().map((section) => ({
+    name: section.name,
+    slug: section.slug,
+    route: section.route,
+    description: section.description,
+    count: section.count,
+    updated: section.updated,
+    posts: section.posts,
+  }));
+}
+
+export function getSectionBySlug(sectionSlug: string): SectionManifestEntry | null {
+  return getSectionManifestEntries().find((section) => section.slug === sectionSlug) ?? null;
+}
+
+export function getSubsectionBySlug(
+  sectionSlug: string,
+  subsectionSlug: string
+): SubsectionManifestEntry | null {
+  const section = getSectionBySlug(sectionSlug);
+  if (!section) return null;
+
+  return section.subsections.find((subsection) => subsection.slug === subsectionSlug) ?? null;
+}
+
+export function getNotesBySection(sectionSlug: string): Post[] {
+  return getAllNotes().filter(
+    (post) => buildRouteInfo(post.frontmatter, post.slug).sectionSlug === sectionSlug
+  );
+}
+
+export function getNotesBySubsection(
+  sectionSlug: string,
+  subsectionSlug: string
+): Post[] {
+  return getAllNotes().filter((post) => {
+    const routeInfo = buildRouteInfo(post.frontmatter, post.slug);
+    return (
+      routeInfo.sectionSlug === sectionSlug &&
+      routeInfo.subsectionSlug === subsectionSlug
+    );
+  });
+}
+
+export function getBreadcrumbItemsForPost(post: Post): BreadcrumbItem[] {
+  const routeInfo = buildRouteInfo(post.frontmatter, post.slug);
+  const items: BreadcrumbItem[] = [
+    { label: "笔记", href: "/notes" },
+    {
+      label: routeInfo.sectionName,
+      href: `/notes/${routeInfo.sectionSlug}`,
+    },
+  ];
+
+  if (routeInfo.subsectionName && routeInfo.subsectionSlug) {
+    items.push({
+      label: routeInfo.subsectionName,
+      href: `/notes/${routeInfo.sectionSlug}/${routeInfo.subsectionSlug}`,
+    });
+  }
+
+  items.push({
+    label: post.frontmatter.nav_title ?? post.frontmatter.title,
+    current: true,
+  });
+
+  return items;
+}
+
+export function getBreadcrumbItemsForSection(
+  section: SectionManifestEntry
+): BreadcrumbItem[] {
+  return [
+    { label: "笔记", href: "/notes" },
+    { label: section.name, current: true },
+  ];
+}
+
+export function getBreadcrumbItemsForSubsection(
+  subsection: SubsectionManifestEntry
+): BreadcrumbItem[] {
+  return [
+    { label: "笔记", href: "/notes" },
+    {
+      label: subsection.sectionName,
+      href: `/notes/${subsection.sectionSlug}`,
+    },
+    { label: subsection.name, current: true },
+  ];
+}
+
+export function getFeaturedNotes(limit = 3): Post[] {
+  const notes = getAllNotes();
+  const featured = notes.filter(
+    (post) =>
+      post.frontmatter.featured && (post.frontmatter.access ?? "public") === "public"
   );
 
-  return posts;
+  if (featured.length > 0) {
+    return featured.slice(0, limit);
+  }
+
+  return notes
+    .filter((post) => (post.frontmatter.access ?? "public") === "public")
+    .sort(
+      (a, b) =>
+        parseDate(b.frontmatter.updated ?? b.frontmatter.date) -
+        parseDate(a.frontmatter.updated ?? a.frontmatter.date)
+    )
+    .slice(0, limit);
+}
+
+export function getRecentlyUpdatedNotes(limit = 6): Post[] {
+  return getAllNotes()
+    .sort(
+      (a, b) =>
+        parseDate(b.frontmatter.updated ?? b.frontmatter.date) -
+        parseDate(a.frontmatter.updated ?? a.frontmatter.date)
+    )
+    .slice(0, limit);
 }
 
 /**
@@ -95,116 +590,77 @@ export function getAllPosts(): Post[] {
  *
  * 普通文章和加密文章都共用这一层预处理，
  * 这样作者始终只需要写一种内容语法。
- *
- * 处理三种格式：
- *   ![描述](images/xxx.png)                   → ![描述](/images/posts/{slug}/images/xxx.png)
- *   <NoteImage src="images/xxx.png" ...>      → <NoteImage src="/images/posts/{slug}/images/xxx.png" ...>
- *   <img src="images/xxx.png" ...>            → <img src="/images/posts/{slug}/images/xxx.png" ...>
- *
- * 这样写笔记时一律用相对路径 images/xxx.png：
- * - VS Code 预览支持标准 ![]() 图片（相对路径天生可用）
- * - <NoteImage> 用 npm run dev 在浏览器里预览
- * - 构建后所有图片路径自动变为正确的网站绝对路径
  */
-export function rewriteImagePaths(content: string, slug: string): string {
-  // 标准 Markdown 图片：![...](images/...)
+export function rewriteImagePaths(content: string, routePath: string): string {
   let result = content.replace(
     /\]\(images\/([^)]+)\)/g,
-    `](/images/posts/${slug}/images/$1)`
+    `](/images/posts/${routePath}/images/$1)`
   );
 
-  // NoteImage 组件：<NoteImage src="images/..." （双引号）
   result = result.replace(
     /(<NoteImage\s[^>]*\bsrc=)"images\/([^"]+)"/g,
-    `$1"/images/posts/${slug}/images/$2"`
+    `$1"/images/posts/${routePath}/images/$2"`
   );
-
-  // NoteImage 组件：<NoteImage src='images/...' （单引号）
   result = result.replace(
     /(<NoteImage\s[^>]*\bsrc=)'images\/([^']+)'/g,
-    `$1'/images/posts/${slug}/images/$2'`
+    `$1'/images/posts/${routePath}/images/$2'`
   );
-
-  // 原生 HTML 图片：<img src="images/..." （双引号）
   result = result.replace(
     /(<img\s[^>]*\bsrc=)"images\/([^"]+)"/g,
-    `$1"/images/posts/${slug}/images/$2"`
+    `$1"/images/posts/${routePath}/images/$2"`
   );
-
-  // 原生 HTML 图片：<img src='images/...' （单引号）
   result = result.replace(
     /(<img\s[^>]*\bsrc=)'images\/([^']+)'/g,
-    `$1'/images/posts/${slug}/images/$2'`
+    `$1'/images/posts/${routePath}/images/$2'`
   );
 
   return result;
 }
 
-export function preparePostContent(content: string, slug: string): string {
-  return rewriteImagePaths(content, slug);
+export function preparePostContent(content: string, routePath: string): string {
+  return rewriteImagePaths(content, routePath);
 }
 
-export function getPostBySlug(slug: string): Post | null {
-  // slug 是文件名（不含扩展名），文件可能在子文件夹中
-  // 遍历所有文章文件查找匹配的 slug
-  const files = findMarkdownFiles(POSTS_DIR, POSTS_DIR);
-
-  for (const { filePath, relativePath } of files) {
-    if (pathToSlug(relativePath) === slug) {
-      const raw = fs.readFileSync(filePath, "utf-8");
-      const { data, content } = matter(raw);
-      const frontmatter = data as Frontmatter;
-      const stats = readingTime(content);
-      const minutes = Math.max(1, Math.ceil(stats.minutes));
-
-      return {
-        slug,
-        frontmatter,
-        content: preparePostContent(content, slug),
-        readingTime: `${minutes} 分钟阅读`,
-      };
-    }
-  }
-
-  return null;
+export function getPostByRouteSegments(routeSegments: string[]): Post | null {
+  const joined = routeSegments.join("/");
+  return getAllNotes().find((post) => post.routePath === joined) ?? null;
 }
 
 export function getPostsByCategory(categorySlug: string): Post[] {
-  return getAllPosts().filter((post) => {
-    return slugify(post.frontmatter.category) === categorySlug;
-  });
+  return getAllPosts().filter(
+    (post) => slugify(post.frontmatter.category) === categorySlug
+  );
 }
 
 export function getPostsByTag(tagSlug: string): Post[] {
-  return getAllPosts().filter((post) => {
-    return post.frontmatter.tags.some((tag) => slugify(tag) === tagSlug);
-  });
+  return getAllPosts().filter((post) =>
+    post.frontmatter.tags.some((tag) => slugify(tag) === tagSlug)
+  );
 }
 
 export function getAllCategories(): CategoryInfo[] {
-  const posts = getAllPosts();
   const map = new Map<string, CategoryInfo>();
 
-  posts.forEach((post) => {
+  for (const post of getAllPosts()) {
     const name = post.frontmatter.category;
     const slug = slugify(name);
     const existing = map.get(slug);
+
     if (existing) {
       existing.count++;
     } else {
       map.set(slug, { name, slug, count: 1 });
     }
-  });
+  }
 
   return Array.from(map.values()).sort((a, b) => b.count - a.count);
 }
 
 export function getAllTags(): TagInfo[] {
-  const posts = getAllPosts();
   const map = new Map<string, TagInfo>();
 
-  posts.forEach((post) => {
-    post.frontmatter.tags.forEach((name) => {
+  for (const post of getAllPosts()) {
+    for (const name of post.frontmatter.tags) {
       const slug = slugify(name);
       const existing = map.get(slug);
       if (existing) {
@@ -212,18 +668,18 @@ export function getAllTags(): TagInfo[] {
       } else {
         map.set(slug, { name, slug, count: 1 });
       }
-    });
-  });
+    }
+  }
 
   return Array.from(map.values()).sort((a, b) => b.count - a.count);
 }
 
-export function getAdjacentPosts(slug: string): {
+export function getAdjacentPosts(route: string): {
   prev: Post | null;
   next: Post | null;
 } {
-  const posts = getAllPosts();
-  const index = posts.findIndex((p) => p.slug === slug);
+  const posts = getAllNotes();
+  const index = posts.findIndex((post) => post.route === route);
 
   if (index === -1) {
     return { prev: null, next: null };
@@ -237,78 +693,65 @@ export function getAdjacentPosts(slug: string): {
 
 export { slugify };
 
-/**
- * 构建侧边栏树结构
- * 根据 content/posts/ 的文件夹层级自动生成
- */
 export function getSidebarTree(): SidebarItem[] {
-  const files = findMarkdownFiles(POSTS_DIR, POSTS_DIR);
-  const tree: SidebarItem[] = [];
-
-  for (const { filePath, relativePath } of files) {
-    const raw = fs.readFileSync(filePath, "utf-8");
-    const { data } = matter(raw);
-    const frontmatter = data as Frontmatter;
-    if (frontmatter.draft) continue;
-
-    const slug = pathToSlug(relativePath);
-    const title = frontmatter.title || slug;
-    const dir = path.dirname(relativePath);
-
-    if (dir === ".") {
-      // 根目录文件
-      tree.push({ title, slug, isFolder: false });
-    } else {
-      // 子文件夹中的文件
-      const parts = dir.split(path.sep);
-      let currentLevel = tree;
-
-      for (const part of parts) {
-        let existing = currentLevel.find(
-          (item) => item.isFolder && item.title === part
-        );
-        if (!existing) {
-          existing = { title: part, isFolder: true, children: [] };
-          currentLevel.push(existing);
-        }
-        if (!existing.children) existing.children = [];
-        currentLevel = existing.children;
-      }
-
-      currentLevel.push({ title, slug, isFolder: false });
-    }
-  }
-
-  // 排序：文件夹在前，文件在后；文件夹按名称排序，文件按日期倒序
-  function sortItems(items: SidebarItem[]) {
-    items.sort((a, b) => {
-      if (a.isFolder && !b.isFolder) return -1;
-      if (!a.isFolder && b.isFolder) return 1;
-      if (a.isFolder && b.isFolder) {
-        return a.title.localeCompare(b.title, "zh-CN");
-      }
-      return 0;
-    });
-    items.forEach((item) => {
-      if (item.children) sortItems(item.children);
-    });
-  }
-  sortItems(tree);
-
-  return tree;
+  return getSectionManifestEntries().map((section) => ({
+    id: `section:${section.slug}`,
+    title: section.name,
+    route: section.route,
+    isFolder: true,
+    order: section.posts[0]?.order,
+    children: [
+      ...section.subsections.map((subsection) => ({
+        id: `section:${section.slug}/subsection:${subsection.slug}`,
+        title: subsection.name,
+        route: subsection.route,
+        isFolder: true,
+        order: subsection.posts[0]?.order,
+        children: subsection.posts.map((note) => ({
+          id: `note:${note.routePath}`,
+          title: note.navTitle,
+          slug: note.slug,
+          route: note.route,
+          isFolder: false,
+          order: note.order,
+          description: note.summary,
+        })),
+      })),
+      ...section.directPosts.map((note) => ({
+        id: `note:${note.routePath}`,
+        title: note.navTitle,
+        slug: note.slug,
+        route: note.route,
+        isFolder: false,
+        order: note.order,
+        description: note.summary,
+      })),
+    ],
+  }));
 }
 
-/**
- * 生成搜索索引（用于客户端全文搜索）
- */
 export function getSearchIndex(): SearchIndexEntry[] {
-  return getAllPosts().map((post) => ({
-    slug: post.slug,
-    title: post.frontmatter.title,
-    description: post.frontmatter.description,
-    category: post.frontmatter.category,
-    tags: post.frontmatter.tags,
-    date: post.frontmatter.date,
-    content: post.content.slice(0, 2000),
-  }));
+  return getAllNotes().map((post) => {
+    const routeInfo = buildRouteInfo(post.frontmatter, post.slug);
+
+    return {
+      slug: post.slug,
+      route: post.route,
+      title: post.frontmatter.title,
+      navTitle: post.frontmatter.nav_title ?? post.frontmatter.title,
+      description: post.frontmatter.description,
+      summary: post.frontmatter.summary ?? post.frontmatter.description,
+      section: routeInfo.sectionName,
+      subsection: routeInfo.subsectionName,
+      category: post.frontmatter.category,
+      tags: post.frontmatter.tags,
+      date: post.frontmatter.date,
+      updated: post.frontmatter.updated ?? post.frontmatter.date,
+      access: post.frontmatter.access ?? "public",
+      content:
+        (post.frontmatter.access ?? "public") === "protected"
+          ? ""
+          : post.content.slice(0, 2500),
+    };
+  });
 }

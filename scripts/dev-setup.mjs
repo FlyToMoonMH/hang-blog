@@ -5,7 +5,9 @@
  */
 import fs from "fs";
 import path from "path";
+import matter from "gray-matter";
 import { fileURLToPath } from "url";
+import GithubSlugger from "github-slugger";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,6 +15,20 @@ const ROOT = path.resolve(__dirname, "..");
 
 const CONTENT_DIR = path.join(ROOT, "content", "posts");
 const PUBLIC_IMAGES_DIR = path.join(ROOT, "public", "images", "posts");
+
+function slugify(value) {
+  return new GithubSlugger().slug(value);
+}
+
+function normalizeRoutePath(relativePath, rawFrontmatter) {
+  const dir = path.dirname(relativePath);
+  const dirParts = dir === "." ? [] : dir.split(path.sep);
+  const fileName = path.basename(relativePath).replace(/\.(md|mdx)$/, "");
+  const section = rawFrontmatter.section || dirParts[0] || rawFrontmatter.category || "未分类";
+  const subsection = rawFrontmatter.subsection || (dirParts.length > 1 ? dirParts[1] : undefined);
+
+  return [slugify(String(section)), ...(subsection ? [slugify(String(subsection))] : []), slugify(fileName)].join("/");
+}
 
 /**
  * 遍历所有子目录，对每个目录执行回调（包括自身）
@@ -32,12 +48,8 @@ function walk(dir, callback) {
 
 let synced = 0;
 
-// 如果存在符号链接（来自 build），先删除，换成真实目录供 Turbopack 使用
 if (fs.existsSync(PUBLIC_IMAGES_DIR)) {
-  const stat = fs.lstatSync(PUBLIC_IMAGES_DIR);
-  if (stat.isSymbolicLink()) {
-    fs.unlinkSync(PUBLIC_IMAGES_DIR);
-  }
+  fs.rmSync(PUBLIC_IMAGES_DIR, { recursive: true, force: true });
 }
 fs.mkdirSync(PUBLIC_IMAGES_DIR, { recursive: true });
 
@@ -50,8 +62,11 @@ walk(CONTENT_DIR, (dirPath) => {
   );
 
   for (const mdFile of mdFiles) {
-    const slug = mdFile.replace(/\.(md|mdx)$/, "");
-    const destDir = path.join(PUBLIC_IMAGES_DIR, slug, "images");
+    const relativeFilePath = path.relative(CONTENT_DIR, path.join(dirPath, mdFile));
+    const raw = fs.readFileSync(path.join(dirPath, mdFile), "utf-8");
+    const { data } = matter(raw);
+    const routePath = normalizeRoutePath(relativeFilePath, data);
+    const destDir = path.join(PUBLIC_IMAGES_DIR, routePath, "images");
 
     const imageFiles = fs.readdirSync(imagesDir).filter((f) => !f.startsWith("."));
     if (imageFiles.length === 0) continue;

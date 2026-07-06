@@ -5,55 +5,91 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { SidebarItem } from "@/types";
 
+function normalizePathname(pathname: string) {
+  return pathname.length > 1 && pathname.endsWith("/")
+    ? pathname.slice(0, -1)
+    : pathname;
+}
+
 function SidebarNode({
   item,
   level,
-  activeSlug,
+  activeRoute,
   expandedSet,
   toggleFolder,
 }: {
   item: SidebarItem;
   level: number;
-  activeSlug: string;
+  activeRoute: string;
   expandedSet: Set<string>;
-  toggleFolder: (title: string) => void;
+  toggleFolder: (id: string) => void;
 }) {
   const paddingLeft = `${12 + level * 16}px`;
 
+  const containsActiveRoute = (node: SidebarItem): boolean => {
+    if (!activeRoute) return false;
+
+    if (node.route && (activeRoute === node.route || activeRoute.startsWith(`${node.route}/`))) {
+      return true;
+    }
+
+    return node.children?.some((child) => containsActiveRoute(child)) ?? false;
+  };
+
   if (item.isFolder) {
-    const isExpanded = expandedSet.has(item.title);
-    const hasActiveChild = item.children?.some(
-      (child) => !child.isFolder && child.slug === activeSlug
-    );
+    const isExpanded = expandedSet.has(item.id);
+    const isActive = containsActiveRoute(item);
 
     return (
       <div>
-        <button
-          onClick={() => toggleFolder(item.title)}
-          className="flex w-full items-center gap-1 py-1.5 text-left text-sm font-medium text-gray-700 transition-colors hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
-          style={{ paddingLeft }}
-        >
-          <svg
-            className={`h-3 w-3 shrink-0 transition-transform ${isExpanded ? "rotate-90" : ""}`}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
+        <div className="flex items-center" style={{ paddingLeft }}>
+          <button
+            type="button"
+            onClick={() => toggleFolder(item.id)}
+            aria-label={isExpanded ? `收起 ${item.title}` : `展开 ${item.title}`}
+            className="mr-1 inline-flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
           >
-            <path d="M9 6l6 6-6 6" />
-          </svg>
-          <span className={hasActiveChild ? "font-semibold text-gray-900 dark:text-gray-100" : ""}>
-            {item.title}
-          </span>
-        </button>
+            <svg
+              className={`h-3 w-3 shrink-0 transition-transform ${isExpanded ? "rotate-90" : ""}`}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M9 6l6 6-6 6" />
+            </svg>
+          </button>
+
+          {item.route ? (
+            <Link
+              href={item.route}
+              className={`min-w-0 flex-1 py-1.5 text-left text-sm font-medium transition-colors ${
+                isActive
+                  ? "text-gray-900 dark:text-gray-100"
+                  : "text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
+              }`}
+            >
+              {item.title}
+            </Link>
+          ) : (
+            <span
+              className={`min-w-0 flex-1 py-1.5 text-left text-sm font-medium ${
+                isActive ? "text-gray-900 dark:text-gray-100" : "text-gray-700 dark:text-gray-300"
+              }`}
+            >
+              {item.title}
+            </span>
+          )}
+        </div>
+
         {isExpanded && item.children && (
           <div>
             {item.children.map((child) => (
               <SidebarNode
-                key={child.title + (child.slug || "")}
+                key={child.id}
                 item={child}
                 level={level + 1}
-                activeSlug={activeSlug}
+                activeRoute={activeRoute}
                 expandedSet={expandedSet}
                 toggleFolder={toggleFolder}
               />
@@ -64,17 +100,17 @@ function SidebarNode({
     );
   }
 
-  const isActive = item.slug === activeSlug;
+  const isActive = item.route === activeRoute;
 
   return (
     <Link
-      href={item.slug ? `/notes/${item.slug}` : "#"}
+      href={item.route ?? "#"}
       className={`block py-1.5 text-sm transition-colors ${
         isActive
           ? "font-semibold text-blue-600 dark:text-blue-400"
           : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
       }`}
-      style={{ paddingLeft: `calc(${paddingLeft} + 16px)` }}
+      style={{ paddingLeft: `calc(${paddingLeft} + 30px)` }}
     >
       {item.title}
     </Link>
@@ -83,61 +119,76 @@ function SidebarNode({
 
 export function Sidebar({ items }: { items: SidebarItem[] }) {
   const pathname = usePathname();
-  // 排除功能页，只在笔记详情页高亮
+  const normalizedPath = normalizePathname(pathname);
   const isFunctionalPage =
-    pathname === "/" ||
-    pathname === "/notes" ||
-    pathname.startsWith("/categories") ||
-    pathname.startsWith("/tags") ||
-    pathname.startsWith("/about");
-  const activeSlug = isFunctionalPage
-    ? ""
-    : pathname.replace(/^\/notes\//, "").replace(/\/$/, "");
+    normalizedPath === "/" ||
+    normalizedPath === "/notes" ||
+    normalizedPath.startsWith("/categories") ||
+    normalizedPath.startsWith("/tags") ||
+    normalizedPath.startsWith("/about");
+  const activeRoute =
+    isFunctionalPage || !normalizedPath.startsWith("/notes/") ? "" : normalizedPath;
 
   const [expandedSet, setExpandedSet] = useState<Set<string>>(new Set());
+  const [hasInteracted, setHasInteracted] = useState(false);
 
-  const toggleFolder = (title: string) => {
+  const toggleFolder = (id: string) => {
+    setHasInteracted(true);
     setExpandedSet((prev) => {
       const next = new Set(prev);
-      if (next.has(title)) {
-        next.delete(title);
+      if (next.has(id)) {
+        next.delete(id);
       } else {
-        next.add(title);
+        next.add(id);
       }
       return next;
     });
   };
 
-  // 自动展开包含活跃文章的文件夹
   const initialExpanded = new Set<string>();
-  const findActive = (items: SidebarItem[], parents: string[]) => {
-    for (const item of items) {
-      if (!item.isFolder && item.slug === activeSlug) {
-        parents.forEach((p) => initialExpanded.add(p));
-        return true;
-      }
-      if (item.isFolder && item.children) {
-        if (findActive(item.children, [...parents, item.title])) {
+  const findActive = (nodes: SidebarItem[], parents: string[]) => {
+    for (const item of nodes) {
+      if (item.isFolder) {
+        const matchesSelf =
+          item.route &&
+          (activeRoute === item.route || activeRoute.startsWith(`${item.route}/`));
+
+        if (matchesSelf) {
+          parents.forEach((parentId) => initialExpanded.add(parentId));
+          initialExpanded.add(item.id);
+        }
+
+        if (item.children && findActive(item.children, [...parents, item.id])) {
+          initialExpanded.add(item.id);
           return true;
         }
+
+        if (matchesSelf) {
+          return true;
+        }
+      } else if (item.route === activeRoute) {
+        parents.forEach((parentId) => initialExpanded.add(parentId));
+        return true;
       }
     }
+
     return false;
   };
+
   findActive(items, []);
 
   const effectiveExpanded =
-    expandedSet.size === 0 && activeSlug ? initialExpanded : expandedSet;
+    !hasInteracted && activeRoute ? initialExpanded : expandedSet;
 
   return (
     <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-64 shrink-0 overflow-y-auto border-r border-gray-200/60 px-3 py-4 dark:border-gray-800/60 lg:block">
       <nav className="space-y-0.5">
         {items.map((item) => (
           <SidebarNode
-            key={item.title + (item.slug || "")}
+            key={item.id}
             item={item}
             level={0}
-            activeSlug={activeSlug}
+            activeRoute={activeRoute}
             expandedSet={effectiveExpanded}
             toggleFolder={toggleFolder}
           />

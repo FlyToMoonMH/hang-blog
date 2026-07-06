@@ -5,7 +5,8 @@ import type { Post } from "@/types";
 import { slugify } from "@/lib/posts";
 
 export function PostCard({ post }: { post: Post }) {
-  const { frontmatter, slug, readingTime } = post;
+  const { frontmatter, readingTime } = post;
+  const access = frontmatter.access ?? "public";
 
   return (
     <article className="group border-b border-gray-200/60 py-6 last:border-0 dark:border-gray-800/60">
@@ -23,12 +24,26 @@ export function PostCard({ post }: { post: Post }) {
           {frontmatter.category}
         </Link>
         <span className="text-gray-300 dark:text-gray-700">|</span>
+        {frontmatter.section && (
+          <>
+            <span>{frontmatter.section}</span>
+            <span className="text-gray-300 dark:text-gray-700">|</span>
+          </>
+        )}
         <span>{readingTime}</span>
+        {access === "protected" && (
+          <>
+            <span className="text-gray-300 dark:text-gray-700">|</span>
+            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+              加密
+            </span>
+          </>
+        )}
       </div>
 
       <h2 className="mt-2 text-xl font-semibold tracking-tight">
         <Link
-          href={`/notes/${slug}`}
+          href={post.route}
           className="text-gray-900 transition-colors hover:text-accent dark:text-gray-100 dark:hover:text-blue-400"
         >
           {frontmatter.title}
@@ -36,7 +51,7 @@ export function PostCard({ post }: { post: Post }) {
       </h2>
 
       <p className="mt-2 text-gray-600 dark:text-gray-400">
-        {frontmatter.description}
+        {frontmatter.summary ?? frontmatter.description}
       </p>
 
       <div className="mt-3 flex flex-wrap gap-2">

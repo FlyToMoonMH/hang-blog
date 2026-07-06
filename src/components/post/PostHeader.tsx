@@ -1,14 +1,23 @@
 import { format } from "date-fns";
 import { zhCN } from "date-fns/locale";
 import Link from "next/link";
-import type { Post } from "@/types";
+import type { BreadcrumbItem, Post } from "@/types";
 import { slugify } from "@/lib/posts";
+import { BreadcrumbNav } from "./BreadcrumbNav";
 
-export function PostHeader({ post }: { post: Post }) {
+export function PostHeader({
+  post,
+  breadcrumbs,
+}: {
+  post: Post;
+  breadcrumbs?: BreadcrumbItem[];
+}) {
   const { frontmatter, readingTime } = post;
 
   return (
     <header className="mb-8">
+      {breadcrumbs && breadcrumbs.length > 0 && <BreadcrumbNav items={breadcrumbs} />}
+
       <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
         <time dateTime={frontmatter.date}>
           {format(new Date(frontmatter.date), "yyyy年MM月dd日", {

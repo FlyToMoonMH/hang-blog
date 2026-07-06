@@ -1,17 +1,27 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import type { MDXRemoteSerializeResult } from "next-mdx-remote";
 import CryptoJS from "crypto-js";
+import { ClientMDXContent } from "./ClientMDXContent";
+import { POST_CONTENT_CLASSNAME } from "./post-layout";
+import { POST_UNLOCKED_EVENT } from "./post-events";
 
 interface PasswordGateProps {
+  encryptedPath: string;
+  postAssetBasePath: string;
   slug: string;
   title: string;
 }
 
-/**
- * 客户端解密内容
- * AES-128-CBC, key = MD5(password), PKCS7 填充
- */
+interface EncryptedPayload {
+  iv: string;
+  ciphertext: string;
+  title?: string;
+  format?: string;
+  version?: number;
+}
+
 function decryptContent(
   password: string,
   ivBase64: string,
@@ -23,10 +33,10 @@ function decryptContent(
     const ciphertext = CryptoJS.enc.Base64.parse(ciphertextBase64);
 
     const decrypted = CryptoJS.AES.decrypt(
-      { ciphertext: ciphertext } as any,
+      { ciphertext } as CryptoJS.lib.CipherParams,
       key,
       {
-        iv: iv,
+        iv,
         padding: CryptoJS.pad.Pkcs7,
         mode: CryptoJS.mode.CBC,
       }
@@ -41,56 +51,84 @@ function decryptContent(
   }
 }
 
-export function PasswordGate({ slug, title }: PasswordGateProps) {
+function isSerializedMdxSource(value: unknown): value is MDXRemoteSerializeResult {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "compiledSource" in value &&
+    typeof (value as { compiledSource?: unknown }).compiledSource === "string"
+  );
+}
+
+export function PasswordGate({
+  encryptedPath,
+  postAssetBasePath,
+  slug,
+  title,
+}: PasswordGateProps) {
   const [password, setPassword] = useState("");
-  const [decryptedHtml, setDecryptedHtml] = useState<string | null>(null);
+  const [decryptedSource, setDecryptedSource] =
+    useState<MDXRemoteSerializeResult | null>(null);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [notFound, setNotFound] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     inputRef.current?.focus();
   }, [slug]);
 
-  // 自动尝试解密
+  useEffect(() => {
+    if (!decryptedSource) return;
+
+    window.dispatchEvent(
+      new CustomEvent(POST_UNLOCKED_EVENT, {
+        detail: { slug },
+      })
+    );
+  }, [decryptedSource, slug]);
+
   async function tryDecrypt(pw: string) {
     setLoading(true);
     setError(false);
 
     try {
-      const resp = await fetch(`/encrypted/${slug}.json`);
-      if (!resp.ok) {
+      const response = await fetch(encryptedPath);
+      if (!response.ok) {
         setNotFound(true);
         setLoading(false);
         return;
       }
-      const data = await resp.json();
-      const html = decryptContent(pw, data.iv, data.ciphertext);
-      if (html) {
-        setDecryptedHtml(html);
-      } else {
+
+      const data = (await response.json()) as EncryptedPayload;
+      const decrypted = decryptContent(pw, data.iv, data.ciphertext);
+
+      if (!decrypted) {
         setError(true);
+        setLoading(false);
+        return;
       }
+
+      const parsed = JSON.parse(decrypted) as unknown;
+      if (!isSerializedMdxSource(parsed)) {
+        setError(true);
+        setLoading(false);
+        return;
+      }
+
+      setDecryptedSource(parsed);
     } catch {
       setError(true);
     }
+
     setLoading(false);
   }
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
     if (!password) return;
     tryDecrypt(password);
   }
-
-  // 解密成功后渲染 HTML
-  useEffect(() => {
-    if (decryptedHtml && contentRef.current) {
-      contentRef.current.innerHTML = decryptedHtml;
-    }
-  }, [decryptedHtml]);
 
   if (notFound) {
     return (
@@ -102,19 +140,20 @@ export function PasswordGate({ slug, title }: PasswordGateProps) {
     );
   }
 
-  if (decryptedHtml) {
+  if (decryptedSource) {
     return (
-      <div
-        ref={contentRef}
-        className="prose prose-gray max-w-none dark:prose-invert prose-headings:scroll-mt-20 prose-pre:rounded-lg prose-pre:border prose-pre:border-gray-200 dark:prose-pre:border-gray-700"
-      />
+      <div data-unlocked-post={slug} className={POST_CONTENT_CLASSNAME}>
+        <ClientMDXContent
+          source={decryptedSource}
+          postAssetBasePath={postAssetBasePath}
+        />
+      </div>
     );
   }
 
   return (
     <div className="flex min-h-[50vh] flex-col items-center justify-center">
       <div className="w-full max-w-sm">
-        {/* 锁图标 */}
         <div className="mb-6 flex justify-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
             <svg
@@ -147,8 +186,8 @@ export function PasswordGate({ slug, title }: PasswordGateProps) {
             ref={inputRef}
             type="password"
             value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
+            onChange={(event) => {
+              setPassword(event.target.value);
               setError(false);
             }}
             placeholder="输入密码..."
@@ -158,7 +197,7 @@ export function PasswordGate({ slug, title }: PasswordGateProps) {
 
           {error && (
             <p className="mt-3 text-center text-sm text-red-500">
-              密码错误，请重试
+              密码错误，或加密内容尚未按新格式重新生成，请重试或重新构建。
             </p>
           )}
 

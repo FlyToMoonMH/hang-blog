@@ -6,21 +6,24 @@ import { useTheme } from "next-themes";
 
 const STORAGE_PREFIX = "blog:";
 
-function loadLikes(slug: string): number {
+function loadLikes(identifier: string): number {
   try {
-    return parseInt(localStorage.getItem(`${STORAGE_PREFIX}likes:${slug}`) || "0", 10);
+    return parseInt(
+      localStorage.getItem(`${STORAGE_PREFIX}likes:${identifier}`) || "0",
+      10
+    );
   } catch {
     return 0;
   }
 }
 
-function saveLike(slug: string): number {
-  const count = loadLikes(slug) + 1;
-  localStorage.setItem(`${STORAGE_PREFIX}likes:${slug}`, String(count));
+function saveLike(identifier: string): number {
+  const count = loadLikes(identifier) + 1;
+  localStorage.setItem(`${STORAGE_PREFIX}likes:${identifier}`, String(count));
   return count;
 }
 
-export function CommentSection({ slug }: { slug: string }) {
+export function CommentSection({ identifier }: { identifier: string }) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
@@ -28,15 +31,17 @@ export function CommentSection({ slug }: { slug: string }) {
 
   useEffect(() => {
     setMounted(true);
-    setLikeCount(loadLikes(slug));
-    setHasLiked(localStorage.getItem(`${STORAGE_PREFIX}liked:${slug}`) === "1");
-  }, [slug]);
+    setLikeCount(loadLikes(identifier));
+    setHasLiked(
+      localStorage.getItem(`${STORAGE_PREFIX}liked:${identifier}`) === "1"
+    );
+  }, [identifier]);
 
   const handleLike = useCallback(() => {
     setHasLiked(true);
-    localStorage.setItem(`${STORAGE_PREFIX}liked:${slug}`, "1");
-    setLikeCount(saveLike(slug));
-  }, [slug]);
+    localStorage.setItem(`${STORAGE_PREFIX}liked:${identifier}`, "1");
+    setLikeCount(saveLike(identifier));
+  }, [identifier]);
 
   const giscusTheme = resolvedTheme === "dark" ? "dark_dimmed" : "light";
 

@@ -1,8 +1,14 @@
 ---
 title: "文章标题"
 description: "一句话描述这篇文章的内容"
+summary: "给列表和搜索结果看的短摘要"
 date: "2026-07-04"
+updated: "2026-07-04"
 category: "随笔"
+section: "随笔"
+subsection: "基础"
+nav_title: "短标题"
+order: 10
 tags: ["标签1", "标签2"]
 draft: false
 ---
@@ -60,4 +66,10 @@ $$
 在 frontmatter 中添加 `password` 字段即可：
 ```yaml
 password: "your-password"
+```
+
+如果想明确声明访问级别，也可以加：
+
+```yaml
+access: "protected"
 ```

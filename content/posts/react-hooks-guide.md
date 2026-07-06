@@ -1,8 +1,13 @@
 ---
 title: "React Hooks 实用指南"
 description: "全面介绍常用的 React Hooks，包含实际使用场景和最佳实践"
+summary: "把常见 Hooks 的用法、边界和思维方式收成一篇可反复查阅的参考笔记。"
 date: "2026-07-01"
+updated: "2026-07-06"
 category: "React"
+section: "React"
+nav_title: "Hooks 指南"
+order: 10
 tags: ["react", "hooks", "前端"]
 ---
 

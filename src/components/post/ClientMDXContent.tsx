@@ -1,23 +1,23 @@
-import { MDXRemote } from "next-mdx-remote/rsc";
-import { mdxOptions } from "@/lib/mdx";
+"use client";
+
+import { MDXRemote, type MDXRemoteSerializeResult } from "next-mdx-remote";
 import { CopyCodeButton } from "./CopyCodeButton";
 import { createPostMdxComponents } from "./post-mdx-components";
 
-export function MDXContent({
+export function ClientMDXContent({
   source,
   postAssetBasePath,
 }: {
-  source: string;
+  source: MDXRemoteSerializeResult;
   postAssetBasePath: string;
 }) {
   return (
     <>
       <MDXRemote
-        source={source}
-        options={{ mdxOptions }}
+        {...source}
         components={createPostMdxComponents(postAssetBasePath)}
       />
-      <CopyCodeButton trigger={source} />
+      <CopyCodeButton trigger={source.compiledSource} />
     </>
   );
 }

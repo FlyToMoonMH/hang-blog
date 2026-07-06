@@ -1,8 +1,14 @@
 ---
 title: "欢迎来到航的笔记本"
 description: "这是一个使用 Next.js 搭建的个人技术博客，记录学习与思考"
+summary: "这个站点的定位、技术栈，以及接下来会如何组织成一个更清晰的知识库。"
 date: "2026-07-03"
+updated: "2026-07-06"
 category: "随笔"
+section: "开始使用"
+nav_title: "欢迎"
+order: 1
+featured: true
 tags: ["博客", "nextjs", "react"]
 ---
 

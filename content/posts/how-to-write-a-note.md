@@ -1,8 +1,13 @@
 ---
 title: "如何写一篇笔记"
 description: "从创建文件到部署上线的完整流程指南"
+summary: "面向这个站点的写作约定，包含 frontmatter、图片、加密与部署规则。"
 date: "2026-07-05"
+updated: "2026-07-06"
 category: "指南"
+section: "指南"
+nav_title: "如何写一篇笔记"
+order: 10
 tags: ["教程", "博客"]
 ---
 
@@ -22,8 +27,8 @@ tags: ["教程", "博客"]
 在项目的 `content/posts/` 目录下创建一个新文件：
 
 ```bash
-# 文件名就是 URL 路径名
-# 例如 my-first-note.md → 网址是 /notes/my-first-note
+# 推荐显式写好 section / subsection
+# 路由由 section / subsection + 文件名共同决定
 content/posts/my-first-note.md
 ```
 
@@ -40,19 +45,19 @@ content/posts/my-first-note.md
 
 ### 子文件夹
 
-你可以在 `content/posts/` 下创建子文件夹来分类管理，**文件夹名不会出现在 URL 中**：
+你可以在 `content/posts/` 下创建子文件夹来分类管理。**真正决定 URL 的，是 frontmatter 里的 `section` / `subsection` 和文件名；文件夹主要用于本地整理。**
 
 ```text
 content/posts/
-├── welcome.md               → /notes/welcome
+├── welcome.md               → /notes/开始使用/welcome
 ├── 前端/
-│   ├── react-hooks.md       → /notes/react-hooks
-│   └── nextjs-tips.md       → /notes/nextjs-tips
-└── 随笔/
-    └── daily.md             → /notes/daily
+│   ├── react-hooks.md       → /notes/react/react-hooks
+│   └── nextjs-tips.md       → /notes/nextjs/nextjs-tips
+└── CS50x/
+    └── C-basics.md          → /notes/cs50x/c-language/c-basics
 ```
 
-> 文件名不要重复，否则会冲突。文件夹仅用于本地整理。
+> 推荐让 `section/subsection` 和文件夹结构大致一致，这样本地管理和站点导航会更直观。
 
 ---
 
@@ -64,8 +69,13 @@ content/posts/
 ---
 title: "我的第一篇笔记"
 description: "这是一篇关于 XX 的笔记"
+summary: "给列表页和搜索结果看的简短摘要"
 date: "2026-07-04"
 category: "随笔"
+section: "随笔"
+subsection: "基础"
+nav_title: "第一篇笔记"
+order: 10
 tags: ["标签1", "标签2"]
 ---
 ```
@@ -76,11 +86,27 @@ tags: ["标签1", "标签2"]
 |------|------|------|------|
 | `title` | ✅ | 字符串 | 文章标题，显示在页面和列表中 |
 | `description` | ✅ | 字符串 | 一句话描述，用于 SEO 和列表预览 |
+| `summary` | 推荐 | 字符串 | 给列表、搜索结果、知识库卡片看的短摘要 |
 | `date` | ✅ | 字符串 | 发布日期，格式 `YYYY-MM-DD`，决定排序 |
 | `category` | ✅ | 字符串 | 分类名（如"随笔"、"前端"、"工具"） |
+| `section` | 推荐 | 字符串 | 知识库分区名，决定左侧导航和 `/notes` 首页分组 |
+| `subsection` | 推荐 | 字符串 | section 下的子分区，决定更细一级的 landing page 和 breadcrumb |
+| `nav_title` | 推荐 | 字符串 | 左侧导航里更短、更适合展示的标题 |
+| `order` | 推荐 | 数字 | 在同一 section 内的排序，数字越小越靠前 |
+| `updated` | 推荐 | 字符串 | 最近更新时间，用于“Recently Updated”排序 |
 | `tags` | ✅ | 数组 | 标签数组，如 `["React", "CSS"]` |
 | `draft` | ❌ | 布尔值 | `true` 时不显示在网站上，默认 `false` |
 | `password` | ❌ | 字符串 | 设置后文章会被加密，访问需输入密码 |
+
+### 推荐理解方式
+
+- `category`：偏归档/归类
+- `section`：偏知识结构
+- `subsection`：偏专题分层
+- `nav_title`：偏导航展示
+- `summary`：偏搜索和列表预览
+
+也就是说，这个站点后面会越来越像一个文档知识库，而不是纯时间线博客。
 
 ### 加密文章示例
 
@@ -90,6 +116,8 @@ title: "私密笔记"
 description: "需要密码才能查看"
 date: "2026-07-04"
 category: "私密"
+section: "私密"
+subsection: "旅行计划"
 tags: ["私密"]
 password: "my-secret-password"
 ---
@@ -266,7 +294,9 @@ content/posts/CS50x/
 
 ```bash
 npm run dev
-# 浏览器打开 http://localhost:3000/notes/你的文件名
+# 浏览器打开类似：
+# http://localhost:3000/notes/指南/how-to-write-a-note
+# 或 http://localhost:3000/notes/cs50x/c-language/c-basics
 ```
 
 > ✅ 这个模式支持**热更新**：修改 `.md` 文件内容、替换图片后浏览器会自动刷新，无需手动刷新页面。
@@ -288,7 +318,10 @@ npm run dev
 4. 在服务器上解压到 `/var/www/mhang-blog/`
 5. `nginx -s reload` 刷新
 
-部署完成后，访问 `http://120.26.254.10/notes/你的文件名` 即可看到新笔记。
+部署完成后，按笔记自己的分层 URL 访问即可，例如：
+
+- `http://120.26.254.10/notes/指南/how-to-write-a-note`
+- `http://120.26.254.10/notes/cs50x/c-language/c-basics`
 
 ---
 
@@ -312,7 +345,7 @@ cp content/posts/_template.md content/posts/my-note.md
 
 - 用英文、数字、连字符：`my-first-note.md`
 - 不要用空格和中文（URL 会变成编码）
-- 文件名 = URL 路径名：`react-hooks.md` → `/notes/react-hooks`
+- URL = `section / subsection / 文件名`：`section: "CS50x" + subsection: "C Language" + C-basics.md` → `/notes/cs50x/c-language/c-basics`
 
 ### date 日期怎么填？
 

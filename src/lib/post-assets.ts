@@ -8,11 +8,11 @@ function isAbsoluteOrExternalSrc(src: string): boolean {
   );
 }
 
-export function resolvePostAssetSrc(src: string, postSlug?: string): string {
-  if (!src || isAbsoluteOrExternalSrc(src) || !postSlug) {
+export function resolvePostAssetSrc(src: string, postAssetBasePath?: string): string {
+  if (!src || isAbsoluteOrExternalSrc(src) || !postAssetBasePath) {
     return src;
   }
 
   const normalizedSrc = src.startsWith("./") ? src.slice(2) : src;
-  return `/images/posts/${postSlug}/${normalizedSrc}`;
+  return `${postAssetBasePath}/${normalizedSrc}`;
 }

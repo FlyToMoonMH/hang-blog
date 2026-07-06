@@ -21,8 +21,8 @@ const posts = getAllPosts();
 posts.forEach((post) => {
   feed.addItem({
     title: post.frontmatter.title,
-    id: `${siteConfig.url}/notes/${post.slug}`,
-    link: `${siteConfig.url}/notes/${post.slug}`,
+    id: `${siteConfig.url}${post.route}`,
+    link: `${siteConfig.url}${post.route}`,
     description: post.frontmatter.description,
     date: new Date(post.frontmatter.date),
     category: post.frontmatter.tags.map((tag) => ({ name: tag })),

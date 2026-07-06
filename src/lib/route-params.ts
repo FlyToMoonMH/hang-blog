@@ -5,3 +5,7 @@ export function decodeRouteParam(value: string): string {
     return value;
   }
 }
+
+export function decodeRouteSegments(values: string[]): string[] {
+  return values.map((value) => decodeRouteParam(value));
+}
