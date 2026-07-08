@@ -29,7 +29,18 @@ export function CopyCodeButton({ trigger }: { trigger?: string | null }) {
       codeBlocks.forEach((pre) => {
         if (pre.querySelector(".copy-code-btn")) return;
 
-        pre.style.position = "relative";
+        let wrapper = pre.parentElement?.classList.contains("code-block-wrapper")
+          ? pre.parentElement
+          : null;
+
+        if (wrapper?.querySelector(".copy-code-btn")) return;
+
+        if (!wrapper) {
+          wrapper = document.createElement("div");
+          wrapper.className = "code-block-wrapper";
+          pre.before(wrapper);
+          wrapper.appendChild(pre);
+        }
 
         const btn = document.createElement("button");
         btn.className = "copy-code-btn";
@@ -62,7 +73,7 @@ export function CopyCodeButton({ trigger }: { trigger?: string | null }) {
           }, 2000);
         });
 
-        pre.appendChild(btn);
+        wrapper.appendChild(btn);
       });
     }
 
