@@ -77,4 +77,4 @@ rm -f /tmp/mhang-blog-out.tar.gz
 echo ""
 echo "✅ 部署完成！"
 echo "   访问 http://$SERVER_IP 查看效果"
-echo "   访问 https://mhang.cc 查看域名"
+echo "   DNS 生效后访问 http://mhang.cc 查看域名"
