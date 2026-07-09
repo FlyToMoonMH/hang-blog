@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import sharp from "sharp";
 
 type FeishuApiResponse<T> = {
   code?: number;
@@ -533,12 +534,28 @@ async function downloadFeishuImage(input: {
   }
 
   const contentType = response.headers.get("content-type") ?? "";
-  const extension = imageExtensionFromContentType(contentType);
-  const fileName = `${input.imageFilePrefix}-${imageNumber}${extension}`;
-  const filePath = path.join(input.imagesDir, fileName);
   const buffer = Buffer.from(await response.arrayBuffer());
+  const fileName = `${input.imageFilePrefix}-${imageNumber}.webp`;
+  const filePath = path.join(input.imagesDir, fileName);
 
-  fs.writeFileSync(filePath, buffer);
+  try {
+    await sharp(buffer)
+      .rotate()
+      .resize({
+        width: 1800,
+        height: 1800,
+        fit: "inside",
+        withoutEnlargement: true,
+      })
+      .webp({ quality: 82, effort: 4 })
+      .toFile(filePath);
+  } catch {
+    const fallbackExtension = imageExtensionFromContentType(contentType);
+    const fallbackFileName = `${input.imageFilePrefix}-${imageNumber}${fallbackExtension}`;
+
+    fs.writeFileSync(path.join(input.imagesDir, fallbackFileName), buffer);
+    return `images/${fallbackFileName}`;
+  }
 
   return `images/${fileName}`;
 }

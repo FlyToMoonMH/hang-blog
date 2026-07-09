@@ -38,7 +38,7 @@ export function NoteImage({
   return (
     <div className={wrapperClass}>
       <figure style={{ margin: 0, display: "inline-block" }}>
-        <img src={resolvedSrc} alt={alt} style={imgStyle} />
+        <img src={resolvedSrc} alt={alt} style={imgStyle} loading="lazy" decoding="async" />
         {caption && <figcaption className="note-figcaption">{caption}</figcaption>}
       </figure>
     </div>

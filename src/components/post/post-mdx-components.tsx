@@ -6,6 +6,8 @@ export function createPostMdxComponents(postAssetBasePath: string) {
     img: ({
       src,
       alt = "",
+      loading,
+      decoding,
       ...props
     }: React.ImgHTMLAttributes<HTMLImageElement>) => (
       <img
@@ -16,6 +18,8 @@ export function createPostMdxComponents(postAssetBasePath: string) {
             : undefined
         }
         alt={alt}
+        loading={loading ?? "lazy"}
+        decoding={decoding ?? "async"}
       />
     ),
     NoteImage: (props: React.ComponentProps<typeof NoteImage>) => (
