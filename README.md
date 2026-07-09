@@ -47,6 +47,33 @@ tags: ["标签1", "标签2"]
 正文内容...
 ```
 
+## 同步飞书云文档
+
+项目内置飞书 Wiki/云文档同步脚本，会把飞书文档读取为 Markdown，写入 `content/posts/Feishu/`，并把文档图片下载到文章目录的 `images/` 中，再沿用现有博客构建流程生成静态网页。
+
+1. 在飞书开放平台创建企业自建应用，并开通云文档/Wiki 只读权限。
+2. 把应用凭证写入 `.env.local`：
+
+```bash
+FEISHU_APP_ID=cli_xxx
+FEISHU_APP_SECRET=xxx
+FEISHU_WIKI_URL=https://my.feishu.cn/wiki/xxx
+```
+
+3. 同步指定 Wiki 链接：
+
+```bash
+npm run sync:feishu -- --url "https://my.feishu.cn/wiki/NWcwwHBRCitpJVkNW8FcTxmCnNf?from=from_copylink"
+```
+
+也可以自定义分类和标签：
+
+```bash
+npm run sync:feishu -- --url "https://my.feishu.cn/wiki/xxx" --section "飞书" --category "随笔" --tags "feishu,同步"
+```
+
+同步完成后运行 `npm run dev` 预览，或运行 `npm run build && bash deploy.sh` 部署。
+
 ## 部署
 
 ```bash
