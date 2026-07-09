@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { siteConfig } from "@/lib/site";
 
 export default function HomePage() {
   return (
@@ -76,6 +77,14 @@ export default function HomePage() {
         <p className="mt-1 text-xs text-gray-300 dark:text-gray-600">
           Built with Next.js &middot; Powered by ❤️
         </p>
+        <a
+          href={siteConfig.icp.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-1 block text-xs text-gray-300 transition-colors hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400"
+        >
+          {siteConfig.icp.text}
+        </a>
       </footer>
 
       {/* Theme toggle — fixed bottom-right */}

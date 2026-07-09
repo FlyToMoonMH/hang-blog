@@ -4,6 +4,10 @@ export const siteConfig = {
   description: "航的技术博客，记录学习与思考",
   locale: "zh-CN",
   author: "航",
+  icp: {
+    text: "浙ICP备2026052232号-1",
+    href: "https://beian.miit.gov.cn/",
+  },
   nav: [
     { title: "笔记", href: "/notes" },
     { title: "首页", href: "/" },
